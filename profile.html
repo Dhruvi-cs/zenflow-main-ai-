@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenFlow AI - My Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>ZenFlow ITSM</h2>
+    <ul>
+        <li><a href="dashboard.html"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="create-ticket.html"><i class="fa-solid fa-ticket"></i> Create Ticket</a></li>
+        <li><a href="history.html"><i class="fa-solid fa-clock-rotate-left"></i> Ticket History</a></li>
+        <li><a href="ai-chat.html"><i class="fa-solid fa-robot"></i> AI Chat</a></li>
+        <li class="active"><a href="profile.html"><i class="fa-solid fa-user"></i> Profile</a></li>
+        <li><a href="index.html" onclick="localStorage.clear(); sessionStorage.clear();"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+    </ul>
+</div>
+
+<div class="main-content">
+    <div class="topbar">
+        <h3>User Profile & Settings</h3>
+        <div class="top-icons">
+            <span id="topUserName" style="font-size: 14px; font-weight: 500; color: #475569; margin-right: 12px;">Demo User</span>
+            <i class="fa-solid fa-bell"></i>
+            <i class="fa-solid fa-user-circle"></i>
+        </div>
+    </div>
+
+    <div class="profile-card">
+        <div class="profile-image">
+            <i class="fa-solid fa-user-astronaut" style="font-size: 40px; color: #2563eb;"></i>
+        </div>
+
+        <h2 id="displayUserName">Alex Morgan</h2>
+        <p id="displayUserRole" style="color: #64748b; font-weight: 500;">Enterprise Customer</p>
+
+        <form class="profile-form" id="profileForm" onsubmit="handleProfileUpdate(event)">
+            <div class="input-box">
+                <label>Full Name</label>
+                <input type="text" id="fullNameInput" required placeholder="Enter your full name">
+            </div>
+
+            <div class="input-box">
+                <label>Email Address</label>
+                <input type="email" id="emailInput" required placeholder="name@company.com">
+            </div>
+
+            <div class="input-box">
+                <label>Department / Team</label>
+                <input type="text" id="deptInput" placeholder="e.g. Cloud Operations">
+            </div>
+
+            <div class="input-box">
+                <label>Phone Number</label>
+                <input type="text" id="phoneInput" placeholder="+1 (555) 019-2834">
+            </div>
+
+            <div class="input-box">
+                <label>Office Location / Address</label>
+                <textarea id="addressInput" rows="2" placeholder="e.g. Building 4, Campus West"></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn" id="saveProfileBtn">
+                <i class="fa-solid fa-floppy-disk"></i>
+                Save Profile Changes
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    async function loadProfile() {
+        let name = localStorage.getItem("zenflow_user") || "Alex Morgan";
+        let email = localStorage.getItem("zenflow_email") || "alex.morgan@enterprise.com";
+        let dept = localStorage.getItem("zenflow_dept") || "IT Infrastructure";
+        let phone = localStorage.getItem("zenflow_phone") || "+1 (555) 019-2834";
+        let address = localStorage.getItem("zenflow_address") || "San Francisco, CA";
+
+        // Attempt fetching profile from backend
+        try {
+            const res = await fetch("http://localhost:5000/api/profile");
+            if (res.ok) {
+                const data = await res.json();
+                if (data.user) {
+                    name = localStorage.getItem("zenflow_user") || data.user.name;
+                    email = localStorage.getItem("zenflow_email") || data.user.email;
+                    dept = data.user.department || dept;
+                    phone = data.user.phone || phone;
+                    address = data.user.address || address;
+                }
+            }
+        } catch (e) {
+            console.log("Using cached profile from storage.");
+        }
+
+        document.getElementById("fullNameInput").value = name;
+        document.getElementById("emailInput").value = email;
+        document.getElementById("deptInput").value = dept;
+        document.getElementById("phoneInput").value = phone;
+        document.getElementById("addressInput").value = address;
+
+        document.getElementById("displayUserName").textContent = name;
+        document.getElementById("topUserName").textContent = name;
+    }
+
+    async function handleProfileUpdate(event) {
+        event.preventDefault();
+
+        const name = document.getElementById("fullNameInput").value.trim();
+        const email = document.getElementById("emailInput").value.trim();
+        const dept = document.getElementById("deptInput").value.trim();
+        const phone = document.getElementById("phoneInput").value.trim();
+        const address = document.getElementById("addressInput").value.trim();
+
+        localStorage.setItem("zenflow_user", name);
+        localStorage.setItem("zenflow_email", email);
+        localStorage.setItem("zenflow_dept", dept);
+        localStorage.setItem("zenflow_phone", phone);
+        localStorage.setItem("zenflow_address", address);
+        sessionStorage.setItem("chat_username", name);
+
+        document.getElementById("displayUserName").textContent = name;
+        document.getElementById("topUserName").textContent = name;
+
+        try {
+            await fetch("http://localhost:5000/api/profile", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, department: dept, phone, address })
+            });
+        } catch (e) {}
+
+        alert("Profile settings successfully updated and synced across live chat & tickets!");
+    }
+
+    window.addEventListener("DOMContentLoaded", loadProfile);
+</script>
+
+</body>
+</html>

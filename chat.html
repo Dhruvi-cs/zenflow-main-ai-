@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZenFlow AI - Real-Time Ticket Collaboration</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+  <style>
+    body {
+      margin: 0;
+      background-color: #f1f5f9;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .chat-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: #ffffff;
+    }
+    .chat-topbar {
+      padding: 16px 28px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+    }
+    .chat-topbar h4 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .chat-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 25px 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: #f8fafc;
+    }
+    .message-bubble {
+      max-width: 68%;
+      padding: 12px 18px;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      word-wrap: break-word;
+      position: relative;
+    }
+    .message-sent {
+      align-self: flex-end;
+      background-color: #2563eb;
+      color: #ffffff;
+      border-bottom-right-radius: 2px;
+    }
+    .message-received {
+      align-self: flex-start;
+      background-color: #ffffff;
+      color: #1e293b;
+      border: 1px solid #e2e8f0;
+      border-bottom-left-radius: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .msg-sender {
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      opacity: 0.85;
+      display: block;
+    }
+    .msg-time {
+      font-size: 0.7rem;
+      opacity: 0.7;
+      margin-top: 4px;
+      text-align: right;
+      display: block;
+    }
+    .typing-status {
+      align-self: flex-start;
+      font-size: 0.82rem;
+      color: #64748b;
+      font-style: italic;
+      padding: 4px 10px;
+    }
+    .chat-input-bar {
+      padding: 16px 28px;
+      background: #ffffff;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      gap: 12px;
+    }
+    .chat-input-bar input {
+      flex: 1;
+      padding: 12px 18px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .chat-input-bar input:focus {
+      border-color: #2563eb;
+    }
+    .chat-input-bar button {
+      padding: 0 24px;
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .chat-input-bar button:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Sidebar -->
+  <div class="sidebar">
+    <h2>ZenFlow ITSM</h2>
+    <ul>
+      <li><a href="dashboard.html"><i class="fa-solid fa-house"></i> Home</a></li>
+      <li><a href="create-ticket.html"><i class="fa-solid fa-ticket"></i> Create Ticket</a></li>
+      <li><a href="history.html"><i class="fa-solid fa-clock-rotate-left"></i> Ticket History</a></li>
+      <li><a href="ai-chat.html"><i class="fa-solid fa-robot"></i> AI Chat</a></li>
+      <li><a href="profile.html"><i class="fa-solid fa-user"></i> Profile</a></li>
+      <li><a href="index.html" onclick="localStorage.clear(); sessionStorage.clear();"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+    </ul>
+  </div>
+
+  <div class="chat-wrapper">
+    <div class="chat-topbar">
+      <div>
+        <h4 id="ticketHeaderTitle"><i class="fa-solid fa-comments text-primary"></i> Ticket Live Discussion</h4>
+        <small id="connectionStatus" style="color: #64748b;">Connecting to real-time server...</small>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <a href="history.html" style="padding: 6px 14px; border: 1px solid #cbd5e1; border-radius: 6px; text-decoration: none; color: #334155; font-size: 13px;">
+          <i class="fa-solid fa-arrow-left"></i> Back to History
+        </a>
+      </div>
+    </div>
+
+    <div class="chat-body" id="messagesContainer">
+      <div style="text-align: center; color: #94a3b8; font-size: 13px; margin-top: 20px;">
+        <i class="fa-solid fa-lock"></i> End-to-end IT support room session initialized.
+      </div>
+    </div>
+
+    <div class="typing-status" id="typingIndicator" style="display: none;">
+      <i class="fa-solid fa-ellipsis fa-fade"></i> <span id="typingUser">Support Agent</span> is typing...
+    </div>
+
+    <form class="chat-input-bar" id="chatInputForm" onsubmit="handleSendMessage(event)">
+      <input type="text" id="messageInput" placeholder="Type message to support team..." autocomplete="off" required>
+      <button type="submit" id="sendBtn">
+        <i class="fa-solid fa-paper-plane"></i> Send
+      </button>
+    </form>
+  </div>
+
+  <!-- Socket.io Client -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const rawTicketId = urlParams.get('ticketId') || 'general_support';
+    const currentTicketId = 'ticket_' + rawTicketId;
+
+    let username = localStorage.getItem('zenflow_user') || sessionStorage.getItem('chat_username');
+    if (!username) {
+      username = 'User_' + Math.floor(Math.random() * 1000);
+      sessionStorage.setItem('chat_username', username);
+    }
+
+    const shortId = rawTicketId.length > 8 ? rawTicketId.slice(-4).toUpperCase() : rawTicketId;
+    document.getElementById('ticketHeaderTitle').innerHTML = `<i class="fa-solid fa-comments text-primary"></i> Ticket #${shortId} Live Session`;
+
+    const messagesContainer = document.getElementById('messagesContainer');
+    const connectionStatus = document.getElementById('connectionStatus');
+    const messageInput = document.getElementById('messageInput');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const typingUserSpan = document.getElementById('typingUser');
+
+    // 1. Connect to Node.js Backend Gateway
+    const socket = io('http://localhost:5000');
+
+    socket.on('connect', () => {
+      connectionStatus.innerHTML = `<span style="color: #16a34a;">● Live</span> | Connected as <strong>${username}</strong>`;
+      socket.emit('join_ticket', currentTicketId);
+    });
+
+    socket.on('disconnect', () => {
+      connectionStatus.innerHTML = `<span style="color: #dc2626;">● Offline</span> | Disconnected from server`;
+    });
+
+    // 2. Load past chat history from database
+    socket.on('load_history', (history) => {
+      if (Array.isArray(history)) {
+        history.forEach(msg => appendMessage(msg));
+      }
+    });
+
+    // 3. Receive live message from room
+    socket.on('receive_message', (data) => {
+      appendMessage(data);
+    });
+
+    // 4. Typing indicators
+    let typingTimeout = null;
+    socket.on('user_typing', (data) => {
+      typingUserSpan.textContent = data.username || 'Support Specialist';
+      typingIndicator.style.display = 'block';
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    });
+
+    socket.on('user_stopped_typing', () => {
+      typingIndicator.style.display = 'none';
+    });
+
+    messageInput.addEventListener('input', () => {
+      socket.emit('typing', { ticketId: currentTicketId, username: username });
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(() => {
+        socket.emit('stop_typing', { ticketId: currentTicketId });
+      }, 1500);
+    });
+
+    // 5. Send message
+    function handleSendMessage(e) {
+      e.preventDefault();
+      const text = messageInput.value.trim();
+      if (!text) return;
+
+      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const payload = {
+        ticketId: currentTicketId,
+        sender: username,
+        message: text,
+        timestamp: timeStr
+      };
+
+      socket.emit('send_message', payload);
+      socket.emit('stop_typing', { ticketId: currentTicketId });
+      messageInput.value = '';
+    }
+
+    // 6. Append message bubble to UI
+    function appendMessage(data) {
+      const isSelf = data.sender === username;
+      const bubble = document.createElement('div');
+      bubble.className = `message-bubble ${isSelf ? 'message-sent' : 'message-received'}`;
+
+      bubble.innerHTML = `
+        <span class="msg-sender">${isSelf ? 'You' : data.sender}</span>
+        <div>${data.message}</div>
+        <span class="msg-time">${data.timestamp || ''}</span>
+      `;
+
+      messagesContainer.appendChild(bubble);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+  </script>
+</body>
+</html>

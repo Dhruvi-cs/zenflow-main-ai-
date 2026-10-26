@@ -1,0 +1,148 @@
+[
+  {
+    "_id": "671cb001a1e4590012345671",
+    "title": "Cannot connect to Corporate VPN",
+    "description": "Getting error 800 when attempting to connect to corporate gateway from home.",
+    "query": "Cannot connect to Corporate VPN: Getting error 800 when attempting to connect to corporate gateway from home.",
+    "customerName": "Alex Morgan",
+    "customerEmail": "alex.morgan@enterprise.com",
+    "user_id": "usr_alex",
+    "category": "Technical Issue",
+    "priority": "High",
+    "urgency": "High",
+    "status": "Open",
+    "sentiment": "Frustrated",
+    "aiSummary": "VPN gateway connection error 800 during remote session.",
+    "deflected": false,
+    "escalated": true,
+    "ai_response": "Checking network protocols and adapter settings. An IT agent is assigned.",
+    "confidence_score": 0.45,
+    "retrieved_sources": [
+      "VPN Troubleshooting Guide"
+    ],
+    "assignedAgent": "Dhruvi Shri",
+    "messages": [
+      {
+        "sender": "Alex Morgan",
+        "message": "Hello, I am unable to connect to the VPN gateway today.",
+        "timestamp": "10:15 AM",
+        "createdAt": "2026-10-26T04:45:00.000Z"
+      },
+      {
+        "sender": "Dhruvi Shri",
+        "message": "Hi Alex, let me check the gateway tunnel certificates. One moment.",
+        "timestamp": "10:17 AM",
+        "createdAt": "2026-10-26T04:47:00.000Z"
+      }
+    ],
+    "createdAt": "2026-10-26T04:40:00.000Z",
+    "updatedAt": "2026-10-26T04:47:00.000Z"
+  },
+  {
+    "_id": "671cb001a1e4590012345672",
+    "title": "How do I reset my account password?",
+    "description": "Forgot my login password and need to regain access to my dashboard.",
+    "query": "How do I reset my account password?: Forgot my login password and need to regain access to my dashboard.",
+    "customerName": "Sarah Jenkins",
+    "customerEmail": "sarah.j@acme.org",
+    "user_id": "usr_sarah",
+    "category": "Account Issue",
+    "priority": "Medium",
+    "urgency": "Medium",
+    "status": "Deflected",
+    "sentiment": "Neutral",
+    "aiSummary": "Customer requested password recovery procedure.",
+    "deflected": true,
+    "escalated": false,
+    "ai_response": "Click on the Forgot Password option on the login page. Enter your registered email address and follow the password reset instructions sent to your email.",
+    "confidence_score": 0.96,
+    "retrieved_sources": [
+      "Password Reset FAQ",
+      "Account Security Doc"
+    ],
+    "assignedAgent": "AI Auto-Deflector",
+    "messages": [],
+    "createdAt": "2026-10-26T05:10:00.000Z",
+    "updatedAt": "2026-10-26T05:10:05.000Z"
+  },
+  {
+    "_id": "671cb001a1e4590012345673",
+    "title": "Billing address update for monthly enterprise subscription",
+    "description": "Our headquarters moved to a new facility. Please update our invoice tax address.",
+    "query": "Billing address update: Please update invoice address to new facility.",
+    "customerName": "David Chen",
+    "customerEmail": "david.chen@technova.io",
+    "user_id": "usr_david",
+    "category": "Billing",
+    "priority": "Low",
+    "urgency": "Low",
+    "status": "Resolved",
+    "sentiment": "Neutral",
+    "aiSummary": "Corporate tax and invoice address change request.",
+    "deflected": false,
+    "escalated": false,
+    "ai_response": "Go to Account Settings, open Billing Information, update your billing address, and save the changes.",
+    "confidence_score": 0.92,
+    "retrieved_sources": [
+      "Billing Information Guide"
+    ],
+    "assignedAgent": "Chesta (Finance)",
+    "messages": [],
+    "createdAt": "2026-10-26T06:00:00.000Z",
+    "updatedAt": "2026-10-26T06:30:00.000Z"
+  },
+  {
+    "_id": "671cb001a1e4590012345674",
+    "title": "API Rate Limit exceeded during batch webhook sync",
+    "description": "Receiving HTTP 429 response during hourly analytics payload transmission.",
+    "query": "API Rate Limit exceeded: HTTP 429 received during hourly export.",
+    "customerName": "Elena Rostova",
+    "customerEmail": "elena@devops.co",
+    "user_id": "usr_elena",
+    "category": "Technical Issue",
+    "priority": "High",
+    "urgency": "High",
+    "status": "In-Progress",
+    "sentiment": "Frustrated",
+    "aiSummary": "Webhook pipeline encountering HTTP 429 rate limit errors.",
+    "deflected": false,
+    "escalated": false,
+    "ai_response": "API rate limits depend on your subscription tier. High throughput endpoints require rate-limit smoothing.",
+    "confidence_score": 0.88,
+    "retrieved_sources": [
+      "API Rate Limits Guide",
+      "Developer Portal"
+    ],
+    "assignedAgent": "Dhruvi Shri",
+    "messages": [],
+    "createdAt": "2026-10-26T07:20:00.000Z",
+    "updatedAt": "2026-10-26T07:25:00.000Z"
+  },
+  {
+    "_id": "671cb001a1e4590012345675",
+    "title": "Enable Two-Factor Authentication for department accounts",
+    "description": "How do team members enable TOTP / Authenticator app for enhanced security?",
+    "query": "Enable Two-Factor Authentication: How do users enable 2FA?",
+    "customerName": "Michael Chang",
+    "customerEmail": "michael.c@globalcorp.net",
+    "user_id": "usr_michael",
+    "category": "Account Issue",
+    "priority": "Medium",
+    "urgency": "Medium",
+    "status": "Deflected",
+    "sentiment": "Neutral",
+    "aiSummary": "Request for two-factor authentication configuration instructions.",
+    "deflected": true,
+    "escalated": false,
+    "ai_response": "ZenFlow supports two-factor authentication. Users can enable 2FA directly from Security Settings for additional account protection.",
+    "confidence_score": 0.94,
+    "retrieved_sources": [
+      "Security Settings Guide",
+      "2FA Configuration"
+    ],
+    "assignedAgent": "AI Auto-Deflector",
+    "messages": [],
+    "createdAt": "2026-10-26T08:00:00.000Z",
+    "updatedAt": "2026-10-26T08:00:04.000Z"
+  }
+]

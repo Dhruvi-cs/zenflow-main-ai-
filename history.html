@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenFlow AI - Ticket History</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <style>
+        .badge-deflected { background-color: #7c3aed; color: #fff; }
+        .badge-in-progress { background-color: #0284c7; color: #fff; }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-box {
+            background: #ffffff;
+            width: 90%;
+            max-width: 650px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 18px;
+            right: 20px;
+            font-size: 24px;
+            color: #64748b;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>ZenFlow ITSM</h2>
+    <ul>
+        <li><a href="dashboard.html"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="create-ticket.html"><i class="fa-solid fa-ticket"></i> Create Ticket</a></li>
+        <li class="active"><a href="history.html"><i class="fa-solid fa-clock-rotate-left"></i> Ticket History</a></li>
+        <li><a href="ai-chat.html"><i class="fa-solid fa-robot"></i> AI Chat</a></li>
+        <li><a href="profile.html"><i class="fa-solid fa-user"></i> Profile</a></li>
+        <li><a href="index.html" onclick="localStorage.clear(); sessionStorage.clear();"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+    </ul>
+</div>
+
+<div class="main-content">
+    <div class="topbar">
+        <h3>Enterprise Ticket History</h3>
+        <div class="top-icons">
+            <span id="topUserName" style="font-size: 14px; font-weight: 500; color: #475569; margin-right: 12px;">Demo User</span>
+            <i class="fa-solid fa-bell"></i>
+            <a href="profile.html" style="color: inherit;"><i class="fa-solid fa-user-circle"></i></a>
+        </div>
+    </div>
+
+    <div class="history-container">
+        <div class="history-header" style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <input type="text" id="searchInput" placeholder="🔍 Search by ID, Subject, or Customer..." style="flex: 2; min-width: 250px;">
+            <select id="statusFilter" style="flex: 1; min-width: 150px;">
+                <option value="ALL">All Statuses</option>
+                <option value="Open">Open</option>
+                <option value="In-Progress">In-Progress</option>
+                <option value="Pending">Pending</option>
+                <option value="Resolved">Resolved</option>
+                <option value="Deflected">Deflected</option>
+            </select>
+            <select id="categoryFilter" style="flex: 1; min-width: 150px;">
+                <option value="ALL">All Categories</option>
+                <option value="Technical Issue">Technical Issue</option>
+                <option value="Account Issue">Account & Login</option>
+                <option value="Billing">Billing & Subscription</option>
+                <option value="Bug Report">Bug Report</option>
+                <option value="Security">Security</option>
+                <option value="General">General</option>
+            </select>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Ticket ID</th>
+                    <th>Subject</th>
+                    <th>Customer</th>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="historyTableBody">
+                <tr>
+                    <td colspan="8" style="text-align: center; color: #888; padding: 25px;">Loading tickets from database...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal: Inspect Ticket Details -->
+<div class="modal-overlay" id="detailModal">
+    <div class="modal-box">
+        <span class="modal-close" onclick="closeModal('detailModal')">&times;</span>
+        <h3 id="modalTicketTitle" style="color: #1e3a8a; margin-top: 0; font-size: 1.25rem;">Ticket Details</h3>
+        <p id="modalTicketMeta" style="font-size: 13px; color: #64748b; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;"></p>
+        
+        <div style="margin-top: 15px;">
+            <h5 style="font-size: 14px; font-weight: 600; color: #334155;">Original Query / Description:</h5>
+            <p id="modalTicketDesc" style="background: #f8fafc; padding: 12px; border-radius: 8px; font-size: 13.5px; color: #1e293b;"></p>
+        </div>
+
+        <div style="margin-top: 15px;">
+            <h5 style="font-size: 14px; font-weight: 600; color: #334155;">AI Grounded Solution:</h5>
+            <div id="modalAiResponse" style="background: #eef2ff; border-left: 4px solid #4f46e5; padding: 14px; border-radius: 8px; font-size: 13.5px; color: #1e1b4b; white-space: pre-line;"></div>
+        </div>
+
+        <div style="margin-top: 15px; font-size: 12.5px; color: #64748b;">
+            <strong>Retrieved Sources:</strong> <span id="modalSources">None</span>
+        </div>
+
+        <div style="margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px;">
+            <button onclick="closeModal('detailModal')" style="padding: 8px 16px; border: 1px solid #cbd5e1; background: #fff; border-radius: 6px; cursor: pointer;">Close</button>
+            <a id="modalChatLink" href="#" style="padding: 8px 18px; background: #2563eb; color: #fff; border-radius: 6px; text-decoration: none; font-weight: 500;">Enter Live Chat</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<script>
+    const user = localStorage.getItem('zenflow_user') || 'Alex Morgan';
+    document.getElementById('topUserName').textContent = user;
+
+    let allTickets = [];
+
+    function formatDate(dateStr) {
+        if (!dateStr) return 'Recent';
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return 'Recent';
+        return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function openModal(id) {
+        document.getElementById(id).style.display = 'flex';
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+
+    function viewTicketDetails(ticketId) {
+        const ticket = allTickets.find(t => String(t._id || t.id) === String(ticketId));
+        if (!ticket) return;
+
+        const rawId = (ticket._id || ticket.id).toString();
+        const shortId = rawId.length > 8 ? rawId.slice(-4).toUpperCase() : rawId;
+
+        document.getElementById('modalTicketTitle').textContent = `Ticket #${shortId} - ${ticket.title || 'Support Request'}`;
+        document.getElementById('modalTicketMeta').innerHTML = `
+            <strong>Category:</strong> ${ticket.category || 'General'} | 
+            <strong>Priority:</strong> ${ticket.priority || 'Medium'} | 
+            <strong>Status:</strong> ${ticket.status || 'Open'} | 
+            <strong>Assigned:</strong> ${ticket.assignedAgent || 'Unassigned'}
+        `;
+        document.getElementById('modalTicketDesc').textContent = ticket.description || ticket.query || 'No description provided.';
+        document.getElementById('modalAiResponse').textContent = ticket.ai_response || ticket.aiResponse || 'No AI response available for this ticket.';
+        
+        const sources = ticket.retrieved_sources || ticket.retrievedSources || [];
+        document.getElementById('modalSources').textContent = sources.length > 0 ? sources.join(', ') : 'None';
+        document.getElementById('modalChatLink').href = `chat.html?ticketId=${rawId}`;
+
+        openModal('detailModal');
+    }
+
+    function renderTickets(tickets) {
+        const tbody = document.getElementById('historyTableBody');
+
+        if (!tickets || tickets.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #888; padding: 25px;">No tickets match your filter criteria.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = tickets.map(t => {
+            const rawId = (t._id || t.id || '').toString();
+            const displayId = rawId.length > 8 ? rawId.slice(-4).toUpperCase() : rawId;
+            const subject = t.title || t.query || 'Support Request';
+            const customer = t.customerName || 'Customer';
+            const category = t.category || 'General';
+            const priority = t.priority || 'Medium';
+            const status = t.status || 'Open';
+            const date = formatDate(t.createdAt);
+
+            let statusBadge = 'bg-primary';
+            if (status === 'Resolved') statusBadge = 'bg-success';
+            else if (status === 'Deflected') statusBadge = 'badge-deflected';
+            else if (status === 'In-Progress') statusBadge = 'badge-in-progress';
+            else if (status === 'Pending') statusBadge = 'bg-warning text-dark';
+
+            return `
+                <tr>
+                    <td><strong>#${displayId}</strong></td>
+                    <td style="max-width: 220px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${subject}</td>
+                    <td>${customer}</td>
+                    <td>${category}</td>
+                    <td>${priority}</td>
+                    <td><span class="badge ${statusBadge}">${status}</span></td>
+                    <td><small style="color: #64748b;">${date}</small></td>
+                    <td>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <button onclick="viewTicketDetails('${rawId}')" style="background: none; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; color: #334155;">
+                                <i class="fa-solid fa-eye"></i> Details
+                            </button>
+                            <a href="chat.html?ticketId=${rawId}" style="text-decoration: none; color: #2563eb; font-weight: 500; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px;">
+                                <i class="fa-solid fa-comments"></i> Chat
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function filterTickets() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+        const selectedStatus = document.getElementById('statusFilter').value;
+        const selectedCategory = document.getElementById('categoryFilter').value;
+
+        const filtered = allTickets.filter(ticket => {
+            const subject = (ticket.title || ticket.query || '').toLowerCase();
+            const customer = (ticket.customerName || '').toLowerCase();
+            const id = (ticket._id || ticket.id || '').toString().toLowerCase();
+            const cat = (ticket.category || '').toLowerCase();
+
+            const matchesSearch = subject.includes(searchTerm) || customer.includes(searchTerm) || id.includes(searchTerm);
+            const matchesStatus = (selectedStatus === 'ALL') || (ticket.status === selectedStatus);
+            const matchesCat = (selectedCategory === 'ALL') || (ticket.category === selectedCategory);
+
+            return matchesSearch && matchesStatus && matchesCat;
+        });
+
+        renderTickets(filtered);
+    }
+
+    async function fetchTicketHistory() {
+        try {
+            const res = await fetch('http://localhost:5000/api/tickets');
+            if (!res.ok) throw new Error('Network error');
+
+            const resData = await res.json();
+            allTickets = resData.data || resData.tickets || (Array.isArray(resData) ? resData : []);
+            renderTickets(allTickets);
+        } catch (err) {
+            console.error('Error fetching ticket history:', err);
+            document.getElementById('historyTableBody').innerHTML = 
+                '<tr><td colspan="8" style="text-align: center; color: #dc2626; padding: 25px;">Could not connect to ZenFlow server on port 5000.</td></tr>';
+        }
+    }
+
+    document.getElementById('searchInput').addEventListener('input', filterTickets);
+    document.getElementById('statusFilter').addEventListener('change', filterTickets);
+    document.getElementById('categoryFilter').addEventListener('change', filterTickets);
+
+    // Real-time socket sync
+    try {
+        const socket = io('http://localhost:5000');
+        socket.on('ticket_created', () => fetchTicketHistory());
+        socket.on('ticket_updated', () => fetchTicketHistory());
+    } catch (e) {}
+
+    window.addEventListener('DOMContentLoaded', fetchTicketHistory);
+</script>
+
+</body>
+</html>

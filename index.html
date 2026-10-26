@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenFlow AI - IT Support Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-box {
+            background: #ffffff;
+            width: 90%;
+            max-width: 440px;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        .modal-box h3 {
+            margin-top: 0;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-close {
+            position: absolute;
+            top: 18px;
+            right: 20px;
+            font-size: 20px;
+            color: #64748b;
+            cursor: pointer;
+        }
+        .toast-msg {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
+            font-size: 14px;
+            z-index: 200;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="logo">
+            <i class="fa-solid fa-headset"></i>
+        </div>
+
+        <h2>Welcome to ZenFlow</h2>
+        <p class="subtitle">AI-Driven ITSM & Automated Deflection Ecosystem</p>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="input-box">
+                <input type="email" id="loginEmail" placeholder="Email Address" value="alex.morgan@enterprise.com" required>
+            </div>
+
+            <div class="input-box">
+                <input type="password" id="loginPassword" placeholder="Password" value="password123" required>
+            </div>
+
+            <div class="options">
+                <label>
+                    <input type="checkbox" id="rememberMe" checked>
+                    Remember me
+                </label>
+                <a href="javascript:void(0)" onclick="openModal('forgotModal')">Forgot Password?</a>
+            </div>
+
+            <button type="submit">Sign In to Workspace</button>
+        </form>
+
+        <p class="register">
+            Don't have an account?
+            <a href="javascript:void(0)" onclick="openModal('registerModal')">Create Account</a>
+        </p>
+    </div>
+</div>
+
+<!-- Modal: Forgot Password -->
+<div class="modal-overlay" id="forgotModal">
+    <div class="modal-box">
+        <span class="modal-close" onclick="closeModal('forgotModal')">&times;</span>
+        <h3><i class="fa-solid fa-key text-primary"></i> Reset Password</h3>
+        <p style="font-size: 13px; color: #64748b; line-height: 1.5;">Enter your work email address and ZenFlow's automated identity service will send password recovery instructions.</p>
+        <div class="input-box" style="margin-top: 15px;">
+            <input type="email" id="forgotEmail" placeholder="Enter your registered email" value="alex.morgan@enterprise.com">
+        </div>
+        <button type="button" style="width: 100%; padding: 12px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 10px;" onclick="handleForgotPassword()">
+            Send Reset Instructions
+        </button>
+    </div>
+</div>
+
+<!-- Modal: Create Account -->
+<div class="modal-overlay" id="registerModal">
+    <div class="modal-box">
+        <span class="modal-close" onclick="closeModal('registerModal')">&times;</span>
+        <h3><i class="fa-solid fa-user-plus text-primary"></i> Register Account</h3>
+        <form onsubmit="handleRegister(event)">
+            <div class="input-box" style="margin-top: 15px;">
+                <input type="text" id="regName" placeholder="Full Name" required>
+            </div>
+            <div class="input-box" style="margin-top: 10px;">
+                <input type="email" id="regEmail" placeholder="Work Email" required>
+            </div>
+            <div class="input-box" style="margin-top: 10px;">
+                <input type="password" id="regPassword" placeholder="Password" required>
+            </div>
+            <div class="input-box" style="margin-top: 10px;">
+                <input type="text" id="regDept" placeholder="Department (e.g. Engineering)" value="IT Operations">
+            </div>
+            <button type="submit" style="width: 100%; padding: 12px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 15px;">
+                Create ZenFlow Account
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="toast-msg" id="toastMsg"></div>
+
+<script>
+    function showToast(msg) {
+        const toast = document.getElementById('toastMsg');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    }
+
+    function openModal(id) {
+        document.getElementById(id).style.display = 'flex';
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+
+    function handleLogin(e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value.trim();
+        const namePart = email.split('@')[0].replace('.', ' ');
+        const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+
+        localStorage.setItem('zenflow_user', formattedName);
+        localStorage.setItem('zenflow_email', email);
+        localStorage.setItem('zenflow_role', 'Enterprise Customer');
+        sessionStorage.setItem('chat_username', formattedName);
+
+        showToast('Authentication successful. Routing to Dashboard...');
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 600);
+    }
+
+    function handleRegister(e) {
+        e.preventDefault();
+        const name = document.getElementById('regName').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const dept = document.getElementById('regDept').value.trim();
+
+        localStorage.setItem('zenflow_user', name);
+        localStorage.setItem('zenflow_email', email);
+        localStorage.setItem('zenflow_dept', dept);
+        localStorage.setItem('zenflow_role', 'Enterprise Customer');
+        sessionStorage.setItem('chat_username', name);
+
+        closeModal('registerModal');
+        showToast(`Welcome, ${name}! Redirecting to Dashboard...`);
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 800);
+    }
+
+    function handleForgotPassword() {
+        const email = document.getElementById('forgotEmail').value.trim();
+        if (!email) {
+            alert('Please enter your email.');
+            return;
+        }
+        closeModal('forgotModal');
+        showToast(`AI Deflection: Password recovery link dispatched to ${email}.`);
+    }
+</script>
+
+</body>
+</html>

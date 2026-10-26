@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenFlow AI - Create Support Ticket</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <style>
+        .confidence-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .conf-high { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+        .conf-med { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+        .conf-low { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+    </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>ZenFlow ITSM</h2>
+    <ul>
+        <li><a href="dashboard.html"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="create-ticket.html" class="active"><i class="fa-solid fa-ticket"></i> Create Ticket</a></li>
+        <li><a href="history.html"><i class="fa-solid fa-clock-rotate-left"></i> Ticket History</a></li>
+        <li><a href="ai-chat.html"><i class="fa-solid fa-robot"></i> AI Chat</a></li>
+        <li><a href="profile.html"><i class="fa-solid fa-user"></i> Profile</a></li>
+        <li><a href="index.html" onclick="localStorage.clear(); sessionStorage.clear();"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+    </ul>
+</div>
+
+<div class="main-content">
+    <div class="topbar">
+        <h3>Create Support Ticket</h3>
+        <div class="top-icons">
+            <span id="topUserName" style="font-size: 14px; font-weight: 500; color: #475569; margin-right: 12px;">Demo User</span>
+            <i class="fa-solid fa-bell"></i>
+            <a href="profile.html" style="color: inherit;"><i class="fa-solid fa-user-circle"></i></a>
+        </div>
+    </div>
+
+    <div class="ticket-form" id="formWrapper">
+        <h2>Submit Incident or Request</h2>
+        <p style="color: #64748b; font-size: 13px; margin-top: -5px;">Our AI Retrieval-Augmented Generation (RAG) pipeline will analyze your query in real-time to attempt instant automated resolution.</p>
+
+        <div class="input-box">
+            <label>Subject</label>
+            <input type="text" id="ticketSubject" placeholder="e.g. How do I reset my password?" required>
+        </div>
+
+        <div class="input-box">
+            <label>Category</label>
+            <select id="ticketCategory">
+                <option value="Account Issue">Account & Authentication</option>
+                <option value="Technical Issue" selected>Technical Issue</option>
+                <option value="Billing">Billing & Subscription</option>
+                <option value="Bug Report">Bug Report</option>
+                <option value="Security">Security & Access</option>
+                <option value="General">General Inquiries</option>
+            </select>
+        </div>
+
+        <div class="input-box">
+            <label>Priority</label>
+            <select id="ticketPriority">
+                <option value="Low">Low - General inquiry</option>
+                <option value="Medium" selected>Medium - Normal workflow interruption</option>
+                <option value="High">High - Significant business impact</option>
+                <option value="Critical">Critical - Complete outage / Lockout</option>
+            </select>
+        </div>
+
+        <div class="input-box">
+            <label>Detailed Description</label>
+            <textarea id="ticketDescription" rows="5" placeholder="Provide detailed steps, error codes, and symptoms..." required></textarea>
+        </div>
+
+        <div class="input-box">
+            <label>Attachment (Optional)</label>
+            <input type="file" id="ticketAttachment">
+        </div>
+
+        <button class="submit-btn" id="submitTicketBtn">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            Submit Ticket with AI Analysis
+        </button>
+    </div>
+
+    <!-- AI Response Deflection Container -->
+    <div id="aiResponseContainer" style="display:none; margin: 30px auto; max-width: 750px; padding: 25px; border-radius: 14px; background: #ffffff; border: 1px solid #c7d2fe; box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px;">
+            <h4 style="color: #1e3a8a; margin: 0; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-robot" style="color: #2563eb;"></i>
+                AI Automated Resolution & Deflection
+            </h4>
+            <span id="confidencePill" class="confidence-badge conf-high">92% Confidence</span>
+        </div>
+
+        <div style="margin-top: 15px;">
+            <p style="font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">RECOMMENDED SOLUTION:</p>
+            <div id="aiAnswer" style="white-space: pre-line; background: #f8fafc; padding: 18px; border-radius: 8px; border-left: 4px solid #2563eb; color: #1e293b; line-height: 1.6; font-size: 14.5px;"></div>
+        </div>
+
+        <div id="sourcesContainer" style="margin-top: 15px; font-size: 12px; color: #64748b;">
+            <strong>Cited Knowledge Sources:</strong> <span id="sourcesList">FAQ Knowledge Base</span>
+        </div>
+        
+        <div style="margin-top: 25px; display: flex; gap: 12px; flex-wrap: wrap;">
+            <button id="resolveBtn" style="background: #16a34a; color: white; border: none; padding: 12px 22px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.3);">
+                <i class="fa-solid fa-check-circle"></i> This Solved My Issue (Deflect Ticket)
+            </button>
+            <button id="escalateBtn" style="background: #ef4444; color: white; border: none; padding: 12px 22px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-user-headset"></i> Still Need Help (Escalate to Human Agent)
+            </button>
+            <button id="chatNowBtn" style="background: #2563eb; color: white; border: none; padding: 12px 22px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-comments"></i> Enter Live Chat
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const user = localStorage.getItem('zenflow_user') || 'Alex Morgan';
+    const email = localStorage.getItem('zenflow_email') || 'alex.morgan@enterprise.com';
+    document.getElementById('topUserName').textContent = user;
+
+    let activeTicketId = null;
+
+    // 1. Submit Ticket
+    document.getElementById('submitTicketBtn').addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        const subject = document.getElementById('ticketSubject').value.trim();
+        const category = document.getElementById('ticketCategory').value;
+        const priority = document.getElementById('ticketPriority').value;
+        const description = document.getElementById('ticketDescription').value.trim();
+        const submitBtn = document.getElementById('submitTicketBtn');
+
+        if (!subject || !description) {
+            alert('Please provide both a ticket subject and description.');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Ingesting & Analyzing with AI RAG...';
+
+        try {
+            const response = await fetch('http://localhost:5000/api/tickets', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: subject,
+                    description: description,
+                    category: category,
+                    priority: priority,
+                    customerName: user,
+                    customerEmail: email,
+                    query: `${subject}: ${description}`
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                activeTicketId = data.ticket?._id || data.data?._id || data._id;
+
+                const container = document.getElementById('aiResponseContainer');
+                const answerP = document.getElementById('aiAnswer');
+                const confPill = document.getElementById('confidencePill');
+                const sourcesSpan = document.getElementById('sourcesList');
+
+                const solution = data.ai_response || data.aiData?.ai_response || data.ticket?.ai_response || 'Ticket received.';
+                const confScore = Math.round((data.aiData?.confidence_score ?? data.ticket?.confidence_score ?? 0.85) * 100);
+                const sources = data.retrieved_sources || data.aiData?.retrieved_sources || ['ZenFlow Standard FAQ'];
+
+                answerP.textContent = solution;
+                confPill.textContent = `${confScore}% Match Confidence`;
+
+                if (confScore >= 70) {
+                    confPill.className = 'confidence-badge conf-high';
+                } else if (confScore >= 50) {
+                    confPill.className = 'confidence-badge conf-med';
+                } else {
+                    confPill.className = 'confidence-badge conf-low';
+                }
+
+                sourcesSpan.textContent = sources.length > 0 ? sources.join(', ') : 'Knowledge Base Repository';
+
+                container.style.display = 'block';
+                container.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert('Error submitting ticket: ' + (data.message || 'Unknown error'));
+            }
+        } catch (err) {
+            console.error('Error submitting ticket:', err);
+            alert('Could not connect to ZenFlow gateway on port 5000. Please ensure the backend server is active.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Submit Ticket with AI Analysis';
+        }
+    });
+
+    // 2. Mark Resolved (Deflect Ticket)
+    document.getElementById('resolveBtn').addEventListener('click', async () => {
+        if (!activeTicketId) return;
+
+        try {
+            const res = await fetch(`http://localhost:5000/api/tickets/${activeTicketId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    status: 'Deflected',
+                    isDeflected: true
+                })
+            });
+
+            if (res.ok) {
+                alert('Success: Solution accepted! Ticket marked as Deflected by AI knowledge base.');
+                window.location.href = 'dashboard.html';
+            }
+        } catch (err) {
+            console.error('Error deflecting ticket:', err);
+        }
+    });
+
+    // 3. Escalate to Human Agent
+    document.getElementById('escalateBtn').addEventListener('click', async () => {
+        if (!activeTicketId) return;
+
+        try {
+            const res = await fetch(`http://localhost:5000/api/tickets/${activeTicketId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    status: 'Open',
+                    priority: 'High',
+                    escalated: true
+                })
+            });
+
+            if (res.ok) {
+                alert('Ticket successfully routed and escalated to the senior IT support queue.');
+                window.location.href = 'dashboard.html';
+            }
+        } catch (err) {
+            console.error('Error escalating ticket:', err);
+        }
+    });
+
+    // 4. Enter Live Chat
+    document.getElementById('chatNowBtn').addEventListener('click', () => {
+        if (activeTicketId) {
+            window.location.href = `chat.html?ticketId=${activeTicketId}`;
+        }
+    });
+</script>
+
+</body>
+</html>

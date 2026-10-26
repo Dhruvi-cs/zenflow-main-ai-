@@ -1,0 +1,122 @@
+[
+  {
+    "title": "Password Reset",
+    "category": "Account",
+    "question": "How do I reset my password?",
+    "answer": "Click on the Forgot Password option on the login page. Enter your registered email address and follow the password reset instructions sent to your email."
+  },
+  {
+    "title": "Create Support Ticket",
+    "category": "Tickets",
+    "question": "How do I create a support ticket?",
+    "answer": "Login to your ZenFlow account, click on Create Ticket, enter your issue details, select the priority level, attach files if required, and submit the ticket."
+  },
+  {
+    "title": "Ticket Status",
+    "category": "Tickets",
+    "question": "How can I check my ticket status?",
+    "answer": "Navigate to the My Tickets section in your dashboard. You can view whether your ticket is Open, In Progress, Resolved, or Closed."
+  },
+  {
+    "title": "Ticket Priority",
+    "category": "Tickets",
+    "question": "What are the different ticket priority levels?",
+    "answer": "ZenFlow supports four priority levels: Low, Medium, High, and Critical. Critical issues are handled with the highest urgency."
+  },
+  {
+    "title": "File Attachment",
+    "category": "Tickets",
+    "question": "Can I attach files to a support ticket?",
+    "answer": "Yes, users can attach screenshots, documents, and other relevant files while creating or updating a support ticket."
+  },
+  {
+    "title": "Login Issues",
+    "category": "Account",
+    "question": "Why am I unable to login?",
+    "answer": "Check that you are using the correct email and password. If the issue continues, reset your password or contact support."
+  },
+  {
+    "title": "Account Registration",
+    "category": "Account",
+    "question": "How do I create a ZenFlow account?",
+    "answer": "Click on the Register option, provide your email details, create a password, and verify your account using the confirmation email."
+  },
+  {
+    "title": "Billing Refund",
+    "category": "Billing",
+    "question": "How can I request a refund?",
+    "answer": "Submit a billing support ticket with your transaction details and reason for requesting a refund. The support team will review your request."
+  },
+  {
+    "title": "Billing Address Update",
+    "category": "Billing",
+    "question": "How do I change my billing address?",
+    "answer": "Go to Account Settings, open Billing Information, update your billing address, and save the changes."
+  },
+  {
+    "title": "Payment Failure",
+    "category": "Billing",
+    "question": "What should I do if my payment fails?",
+    "answer": "Check your payment details, ensure sufficient balance, and try again. If the issue continues, contact the billing support team."
+  },
+  {
+    "title": "Subscription Plans",
+    "category": "Billing",
+    "question": "Where can I view subscription plans?",
+    "answer": "You can view available subscription plans from the Pricing section of your ZenFlow account."
+  },
+  {
+    "title": "API Rate Limits",
+    "category": "API",
+    "question": "What are the API rate limits?",
+    "answer": "API rate limits depend on your subscription plan. If requests exceed the limit, the API will temporarily reject additional requests."
+  },
+  {
+    "title": "API Key Generation",
+    "category": "API",
+    "question": "How do I generate an API key?",
+    "answer": "Open Developer Settings, select API Keys, and click Generate New Key. Store your API key securely."
+  },
+  {
+    "title": "API Authentication",
+    "category": "API",
+    "question": "How does API authentication work?",
+    "answer": "ZenFlow APIs use API keys for authentication. Every request must include a valid API key."
+  },
+  {
+    "title": "Notification Settings",
+    "category": "Settings",
+    "question": "How do I manage notifications?",
+    "answer": "Open Settings, go to Notifications, and customize email and application notification preferences."
+  },
+  {
+    "title": "Profile Update",
+    "category": "Account",
+    "question": "How do I update my profile information?",
+    "answer": "Go to Profile Settings, edit your information, and click Save Changes."
+  },
+  {
+    "title": "Two Factor Authentication",
+    "category": "Security",
+    "question": "Does ZenFlow support two factor authentication?",
+    "answer": "Yes, users can enable two factor authentication from Security Settings for additional account protection."
+  },
+  {
+    "title": "Data Security",
+    "category": "Security",
+    "question": "How does ZenFlow protect user data?",
+    "answer": "ZenFlow uses secure authentication, encrypted communication, and access controls to protect user information."
+  },
+  {
+    "title": "Contact Support",
+    "category": "Support",
+    "question": "How can I contact customer support?",
+    "answer": "Create a support ticket through the dashboard or use the official support contact options."
+  },
+  {
+    "title": "Ticket Resolution Time",
+    "category": "Tickets",
+    "question": "How long does it take to resolve a ticket?",
+    "answer": "Resolution time depends on ticket priority and complexity. Critical issues are handled before lower priority requests."
+  }
+]

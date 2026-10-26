@@ -1,0 +1,10 @@
+node_modules/
+.env
+ai-backend/.env
+target/
+__pycache__/
+*.py[cod]
+*$py.class
+.idea/
+.vscode/
+.DS_Store
