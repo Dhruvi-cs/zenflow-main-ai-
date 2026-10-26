@@ -3,8 +3,8 @@ version: '3.8'
 services:
   ai-microservice:
     build:
-      context: .
-      dockerfile: ai-backend/Dockerfile
+      context: ./ai-backend
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     environment:
