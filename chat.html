@@ -198,7 +198,8 @@
     const typingUserSpan = document.getElementById('typingUser');
 
     // 1. Connect to Node.js Backend Gateway
-    const socket = io('http://localhost:5000');
+    const socketUrl = (window.location.protocol.startsWith('http') && window.location.port !== '5500' && window.location.port !== '5501') ? undefined : 'http://localhost:5000';
+    const socket = io(socketUrl);
 
     socket.on('connect', () => {
       connectionStatus.innerHTML = `<span style="color: #16a34a;">● Live</span> | Connected as <strong>${username}</strong>`;

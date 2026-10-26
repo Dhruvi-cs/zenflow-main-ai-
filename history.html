@@ -256,9 +256,11 @@
         renderTickets(filtered);
     }
 
+    const API_BASE = (window.location.protocol.startsWith('http') && window.location.port !== '5500' && window.location.port !== '5501') ? '' : 'http://localhost:5000';
+
     async function fetchTicketHistory() {
         try {
-            const res = await fetch('http://localhost:5000/api/tickets');
+            const res = await fetch(`${API_BASE}/api/tickets`);
             if (!res.ok) throw new Error('Network error');
 
             const resData = await res.json();
@@ -267,7 +269,7 @@
         } catch (err) {
             console.error('Error fetching ticket history:', err);
             document.getElementById('historyTableBody').innerHTML = 
-                '<tr><td colspan="8" style="text-align: center; color: #dc2626; padding: 25px;">Could not connect to ZenFlow server on port 5000.</td></tr>';
+                '<tr><td colspan="8" style="text-align: center; color: #dc2626; padding: 25px;">Could not connect to ZenFlow server.</td></tr>';
         }
     }
 
@@ -277,7 +279,8 @@
 
     // Real-time socket sync
     try {
-        const socket = io('http://localhost:5000');
+        const socketUrl = (window.location.protocol.startsWith('http') && window.location.port !== '5500' && window.location.port !== '5501') ? undefined : 'http://localhost:5000';
+        const socket = io(socketUrl);
         socket.on('ticket_created', () => fetchTicketHistory());
         socket.on('ticket_updated', () => fetchTicketHistory());
     } catch (e) {}

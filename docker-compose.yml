@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  ai-microservice:
+    build:
+      context: .
+      dockerfile: ai-backend/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+    restart: unless-stopped
+
+  gateway-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - AI_SERVICE_URL=http://ai-microservice:8000
+    depends_on:
+      - ai-microservice
+    restart: unless-stopped

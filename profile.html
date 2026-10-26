@@ -77,6 +77,8 @@
 </div>
 
 <script>
+    const API_BASE = (window.location.protocol.startsWith('http') && window.location.port !== '5500' && window.location.port !== '5501') ? '' : 'http://localhost:5000';
+
     async function loadProfile() {
         let name = localStorage.getItem("zenflow_user") || "Alex Morgan";
         let email = localStorage.getItem("zenflow_email") || "alex.morgan@enterprise.com";
@@ -86,7 +88,7 @@
 
         // Attempt fetching profile from backend
         try {
-            const res = await fetch("http://localhost:5000/api/profile");
+            const res = await fetch(`${API_BASE}/api/profile`);
             if (res.ok) {
                 const data = await res.json();
                 if (data.user) {
@@ -131,7 +133,7 @@
         document.getElementById("topUserName").textContent = name;
 
         try {
-            await fetch("http://localhost:5000/api/profile", {
+            await fetch(`${API_BASE}/api/profile`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name, email, department: dept, phone, address })

@@ -137,6 +137,8 @@
 
     let activeTicketId = null;
 
+    const API_BASE = (window.location.protocol.startsWith('http') && window.location.port !== '5500' && window.location.port !== '5501') ? '' : 'http://localhost:5000';
+
     // 1. Submit Ticket
     document.getElementById('submitTicketBtn').addEventListener('click', async (e) => {
         e.preventDefault();
@@ -156,7 +158,7 @@
         submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Ingesting & Analyzing with AI RAG...';
 
         try {
-            const response = await fetch('http://localhost:5000/api/tickets', {
+            const response = await fetch(`${API_BASE}/api/tickets`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -216,7 +218,7 @@
         if (!activeTicketId) return;
 
         try {
-            const res = await fetch(`http://localhost:5000/api/tickets/${activeTicketId}`, {
+            const res = await fetch(`${API_BASE}/api/tickets/${activeTicketId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -239,7 +241,7 @@
         if (!activeTicketId) return;
 
         try {
-            const res = await fetch(`http://localhost:5000/api/tickets/${activeTicketId}`, {
+            const res = await fetch(`${API_BASE}/api/tickets/${activeTicketId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

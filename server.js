@@ -1,6 +1,7 @@
 // server.js - ZenFlow Backend Gateway & Real-Time Business Orchestrator
 const express = require('express');
 const http = require('http');
+const path = require('path');
 const cors = require('cors');
 const { Server } = require('socket.io');
 const axios = require('axios');
@@ -19,7 +20,10 @@ app.use(cors({
 
 app.use(express.json());
 
-// 2. Socket.io Setup (Supports Live Server on 5500/5501, browser tabs, and dev clients)
+// 2. Static File Serving (Runs frontend and backend together under a single unified local host)
+app.use(express.static(path.join(__dirname)));
+
+// 3. Socket.io Setup (Supports browser clients, Live Server, and unified hosting)
 const io = new Server(server, {
   cors: {
     origin: '*',
@@ -40,11 +44,15 @@ try {
   console.log('Socket handler loading notice:', socketErr.message);
 }
 
-// 3. Database Connection
+// 4. Database Connection
 connectDB();
 
-// 4. Health Check Root
+// 5. Root & Health Check Endpoints
 app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/api', (req, res) => {
   res.json({
     name: 'ZenFlow Enterprise ITSM Gateway',
     status: 'online',

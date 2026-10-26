@@ -110,34 +110,52 @@ CONFIDENCE_THRESHOLD=0.60
 
 ---
 
-## 🏃 Starting the Platform
+## 🏃 How to Run Locally (100% Free - Zero Server Setup)
 
-### Terminal 1: AI RAG Microservice (Port 8000)
+ZenFlow can run **100% locally on your computer with $0.00 cloud or hosting costs**. It requires no paid cloud servers, no paid MongoDB Atlas cluster, and no paid API keys.
+
+### Option 1: 1-Click Windows Launcher (Recommended)
+Simply double-click:
+```
+start-zenflow.bat
+```
+This batch script will:
+1. Start the Python AI RAG Microservice on port `8000`.
+2. Start the Node.js Gateway & static web server on port `5000`.
+3. Automatically launch your default browser to `http://localhost:5000`.
+
+To stop all services cleanly anytime, double-click `stop-zenflow.bat`.
+
+---
+
+### Option 2: Unified Node Server (Single Port 5000)
+`server.js` now serves both the REST/Socket API Gateway **and** the frontend client:
 ```bash
-python -m uvicorn rag.main:app --app-dir ai-backend --host 127.0.0.1 --port 8000 --reload
-# or via npm script:
+# Terminal 1: AI Microservice
 npm run ai:start
-```
 
-### Terminal 2: Gateway & Business Orchestrator (Port 5000)
-```bash
+# Terminal 2: Web Gateway & Portal
 npm start
-# or for auto-reloading dev mode:
-npm run dev
 ```
+Then open: **`http://localhost:5000`** (or `index.html`, `dashboard.html`, etc.)  
+*(Live Server on port 5500 is completely optional).*
 
-### Terminal 3: Frontend Client (Port 5500 / 5501)
-Serve the root directory via VS Code **Live Server** on `http://127.0.0.1:5500`, or using Python:
+---
+
+### Option 3: Docker Compose (One-Command Deployment)
+If you have Docker Desktop installed, run:
 ```bash
-python -m http.server 5500
+docker compose up --build
 ```
-Open your browser to:
-- **Login Portal**: `http://127.0.0.1:5500/index.html`
-- **Dashboard**: `http://127.0.0.1:5500/dashboard.html`
-- **Create Ticket**: `http://127.0.0.1:5500/create-ticket.html`
-- **Ticket History**: `http://127.0.0.1:5500/history.html`
-- **AI Virtual Chat**: `http://127.0.0.1:5500/ai-chat.html`
-- **User Profile**: `http://127.0.0.1:5500/profile.html`
+Both the Python microservice and the Node gateway will spin up in isolated containers. Access the app at `http://localhost:5000`.
+
+---
+
+### Option 4: 100% Free Cloud Deployment
+If you want to host ZenFlow on the public internet without paying a single dollar:
+1. **Frontend + Node Gateway**: Deploy to [Render.com](https://render.com) (Free Web Service tier) or [Railway.app](https://railway.app). Set build command to `npm install` and start command to `node server.js`.
+2. **AI Microservice**: Deploy the `ai-backend/` directory to [Hugging Face Spaces](https://huggingface.co/spaces) (Free Docker space running FastAPI) or Render Free Web Service.
+3. **Database**: Use [MongoDB Atlas M0 Free Tier](https://www.mongodb.com/atlas) (512MB free forever). Set `MONGO_URI` in your cloud environment variables.
 
 ---
 
