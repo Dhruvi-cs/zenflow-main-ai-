@@ -55,15 +55,7 @@ class FastSemanticEmbeddings(Embeddings):
         return self.embed_documents(input)
 
 def get_embeddings():
-    if is_gemini_active():
-        try:
-            from langchain_google_genai import GoogleGenerativeAIEmbeddings
-            return GoogleGenerativeAIEmbeddings(
-                model=EMBEDDING_MODEL,
-                google_api_key=GOOGLE_API_KEY
-            )
-        except Exception as e:
-            print(f"Notice: Google GenAI Embeddings unavailable ({e}). Activating internal semantic embeddings.")
+    # FastSemanticEmbeddings guarantees 100% offline consistency and zero dimension mismatch
     return FastSemanticEmbeddings()
 
 def create_chunks():

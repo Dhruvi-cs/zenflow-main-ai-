@@ -16,8 +16,8 @@ load_dotenv(BASE_DIR.parent / ".env")
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
 CONFIDENCE_THRESHOLD = float(os.getenv("CONFIDENCE_THRESHOLD", "0.60"))
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "models/gemini-embedding-001")
-LLM_MODEL = os.getenv("LLM_MODEL", "gemini-2.5-flash")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "models/text-embedding-004")
+LLM_MODEL = os.getenv("LLM_MODEL", "gemini-1.5-flash")
 
 def is_gemini_active() -> bool:
     return bool(GOOGLE_API_KEY and not GOOGLE_API_KEY.startswith("mock_") and "your_" not in GOOGLE_API_KEY)

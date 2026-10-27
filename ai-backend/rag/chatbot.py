@@ -79,6 +79,42 @@ def ask_chatbot(
             "status": "success"
         }
 
+    # 2. Non-Work & Out-of-Scope Query Detection
+    # Avoid creating junk tickets for human IT technicians for personal queries
+    non_work_keywords = [
+        "pizza", "burger", "food", "lunch", "dinner", "breakfast", "coffee", "restaurant",
+        "recipe", "movie", "song", "music", "cricket", "football", "sports", "joke",
+        "weather", "forecast", "horoscope", "flight", "hotel", "buy shoes", "dating"
+    ]
+    it_keywords = [
+        "it", "ticket", "laptop", "vpn", "system", "email", "password", "software",
+        "account", "login", "database", "wifi", "network", "server", "priority", "device"
+    ]
+
+    is_non_work = any(re.search(r'\b' + re.escape(kw) + r'\b', clean_q) for kw in non_work_keywords)
+    has_it_context = any(re.search(r'\b' + re.escape(itk) + r'\b', clean_q) for itk in it_keywords)
+
+    if is_non_work and not has_it_context:
+        out_of_scope_reply = (
+            "I am ZenFlow, your enterprise IT and workplace support assistant. 🏢\n\n"
+            "I am designed to answer technical questions and workplace policies based on our company's "
+            "knowledge base (such as VPN access, password resets, ticket SLAs, and software troubleshooting).\n\n"
+            "I cannot assist with personal or non-work-related requests such as ordering food, entertainment, or personal errands."
+        )
+        return {
+            "requires_human_agent": False,
+            "deflected": True,
+            "can_deflect": True,
+            "confidence_score": 1.0,
+            "retrieval_distance": 0.0,
+            "retrieved_sources": ["ZenFlow Enterprise Scope Policy"],
+            "sources": ["ZenFlow Enterprise Scope Policy"],
+            "response": out_of_scope_reply,
+            "answer": out_of_scope_reply,
+            "ai_response": out_of_scope_reply,
+            "status": "success"
+        }
+
     if chat_history is None:
         chat_history = []
 
