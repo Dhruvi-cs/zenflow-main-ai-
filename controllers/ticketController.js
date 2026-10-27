@@ -41,15 +41,16 @@ exports.createTicket = async (req, res) => {
       error: null
     };
 
-    // Forward to FastAPI RAG microservice on port 8000
+    // Forward to FastAPI RAG microservice
     try {
+      const aiEndpoint = process.env.AI_SERVICE_URL || 'http://127.0.0.1:8000/api/v1/rag/query';
       const aiResponse = await axios.post(
-        'http://127.0.0.1:8000/api/v1/rag/query',
+        aiEndpoint,
         {
           query: fullQuery,
           category: selectedCategory
         },
-        { timeout: 8000 }
+        { timeout: 12000 }
       );
 
       if (aiResponse.data) {

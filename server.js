@@ -65,7 +65,9 @@ app.get('/api', (req, res) => {
 app.get('/api/health', async (req, res) => {
   let aiHealth = 'unreachable';
   try {
-    const aiRes = await axios.get('http://127.0.0.1:8000/', { timeout: 1500 });
+    const rawAiUrl = process.env.AI_SERVICE_URL || 'http://127.0.0.1:8000';
+    const aiBase = rawAiUrl.replace(/\/api\/v1\/rag\/query\/?$/, '').replace(/\/+$/, '');
+    const aiRes = await axios.get(aiBase + '/', { timeout: 3000 });
     if (aiRes.status === 200) aiHealth = 'online';
   } catch {
     aiHealth = 'offline';

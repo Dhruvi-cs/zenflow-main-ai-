@@ -15,15 +15,16 @@ router.post(['/chat', '/query'], async (req, res) => {
       });
     }
 
-    // Proxy request to Python FastAPI RAG microservice on port 8000
+    // Proxy request to Python FastAPI RAG microservice
     try {
+      const aiEndpoint = process.env.AI_SERVICE_URL || 'http://127.0.0.1:8000/api/v1/rag/query';
       const aiRes = await axios.post(
-        'http://127.0.0.1:8000/api/v1/rag/query',
+        aiEndpoint,
         {
           query: userQuery,
           category: category
         },
-        { timeout: 8000 }
+        { timeout: 12000 }
       );
 
       if (aiRes.data) {
