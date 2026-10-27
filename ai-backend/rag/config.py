@@ -23,10 +23,6 @@ def is_gemini_active() -> bool:
     if not GOOGLE_API_KEY:
         return False
     k = GOOGLE_API_KEY.strip()
-    if k.startswith("mock_") or "your_" in k or "<your" in k:
-        return False
-    if k.startswith("AQ.") or k.startswith("ya29."):
-        # OAuth access token supplied instead of API key
-        print("[NOTICE] GOOGLE_API_KEY begins with 'AQ.'/'ya29.' which is an OAuth access token format. Google Generative Language API requires an API key starting with 'AIzaSy'. Operating in high-precision grounded local RAG mode.")
+    if k.startswith("mock_") or "your_" in k or "<your" in k or k == "":
         return False
     return len(k) >= 20

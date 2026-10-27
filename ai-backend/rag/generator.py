@@ -40,9 +40,38 @@ def stem_word(w: str) -> str:
     return w
 
 def generate_response(question: str, context: str, chat_history: str = "") -> str:
-    # 1. If live Gemini API key is configured, invoke LangChain ChatGoogleGenerativeAI
+    # 1. If live Gemini API key is configured, invoke generative models (Direct REST + LangChain)
     if is_gemini_active():
+        # Attempt 1: Direct Google Generative Language REST API (supports all key formats including new AQ. auth keys)
         try:
+            import requests
+            prompt_str = f"{SYSTEM_PROMPT}\n\nConversation History:\n{chat_history}\n\nCompany Documentation Context:\n{context}\n\nUser Question:\n{question}"
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{LLM_MODEL}:generateContent?key={GOOGLE_API_KEY}"
+            headers = {
+                "Content-Type": "application/json",
+                "x-goog-api-key": GOOGLE_API_KEY
+            }
+            payload = {
+                "contents": [{"parts": [{"text": prompt_str}]}],
+                "generationConfig": {"temperature": 0.2, "maxOutputTokens": 800}
+            }
+            resp = requests.post(url, headers=headers, json=payload, timeout=8)
+            if resp.status_code == 200:
+                data = resp.json()
+                candidates = data.get("candidates", [])
+                if candidates:
+                    parts = candidates[0].get("content", {}).get("parts", [])
+                    txt = "".join(p.get("text", "") for p in parts).strip()
+                    if txt:
+                        return txt
+        except Exception:
+            pass
+
+        # Attempt 2: LangChain ChatGoogleGenerativeAI
+        try:
+            import os
+            os.environ["GEMINI_API_KEY"] = GOOGLE_API_KEY
+            os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
             from langchain_google_genai import ChatGoogleGenerativeAI
             llm = ChatGoogleGenerativeAI(
                 model=LLM_MODEL,
