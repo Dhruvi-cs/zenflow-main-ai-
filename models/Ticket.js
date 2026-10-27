@@ -227,9 +227,27 @@ class TicketWrapper {
     const found = tickets.find(t => String(t._id) === String(id));
     if (!found) return null;
 
-    // Attach messages helper to mimic Mongoose document
-    found.select = function () { return this; };
-    return found;
+    const wrapped = new TicketWrapper(found);
+    wrapped.select = function () { return this; };
+    return wrapped;
+  }
+
+  static async findByIdAndDelete(id) {
+    if (mongoose.connection.readyState === 1 && mongoose.Types.ObjectId.isValid(id)) {
+      try {
+        return await MongooseModel.findByIdAndDelete(id);
+      } catch (err) {
+        console.warn('Mongoose findByIdAndDelete warning:', err.message);
+      }
+    }
+
+    const tickets = readLocalTickets();
+    const index = tickets.findIndex(t => String(t._id) === String(id));
+    if (index === -1) return null;
+
+    const [deleted] = tickets.splice(index, 1);
+    writeLocalTickets(tickets);
+    return deleted;
   }
 
   static async findByIdAndUpdate(id, updateObj, options = {}) {
