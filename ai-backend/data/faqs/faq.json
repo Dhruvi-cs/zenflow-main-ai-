@@ -3,120 +3,196 @@
     "title": "Password Reset",
     "category": "Account",
     "question": "How do I reset my password?",
-    "answer": "Click on the Forgot Password option on the login page. Enter your registered email address and follow the password reset instructions sent to your email."
+    "answer": "Click on the Forgot Password option on the login page. Enter your registered email address and follow the password reset instructions sent to your email.",
+    "id": "kb_1"
   },
   {
     "title": "Create Support Ticket",
     "category": "Tickets",
     "question": "How do I create a support ticket?",
-    "answer": "Login to your ZenFlow account, click on Create Ticket, enter your issue details, select the priority level, attach files if required, and submit the ticket."
+    "answer": "Login to your ZenFlow account, click on Create Ticket, enter your issue details, select the priority level, attach files if required, and submit the ticket.",
+    "id": "kb_2"
   },
   {
     "title": "Ticket Status",
     "category": "Tickets",
     "question": "How can I check my ticket status?",
-    "answer": "Navigate to the My Tickets section in your dashboard. You can view whether your ticket is Open, In Progress, Resolved, or Closed."
+    "answer": "Navigate to the My Tickets section in your dashboard. You can view whether your ticket is Open, In Progress, Resolved, or Closed.",
+    "id": "kb_3"
   },
   {
     "title": "Ticket Priority",
     "category": "Tickets",
     "question": "What are the different ticket priority levels?",
-    "answer": "ZenFlow supports four priority levels: Low, Medium, High, and Critical. Critical issues are handled with the highest urgency."
+    "answer": "ZenFlow supports four priority levels: Low, Medium, High, and Critical. Critical issues are handled with the highest urgency.",
+    "id": "kb_4"
   },
   {
     "title": "File Attachment",
     "category": "Tickets",
     "question": "Can I attach files to a support ticket?",
-    "answer": "Yes, users can attach screenshots, documents, and other relevant files while creating or updating a support ticket."
+    "answer": "Yes, users can attach screenshots, documents, and other relevant files while creating or updating a support ticket.",
+    "id": "kb_5"
   },
   {
     "title": "Login Issues",
     "category": "Account",
     "question": "Why am I unable to login?",
-    "answer": "Check that you are using the correct email and password. If the issue continues, reset your password or contact support."
+    "answer": "Check that you are using the correct email and password. If the issue continues, reset your password or contact support.",
+    "id": "kb_6"
   },
   {
     "title": "Account Registration",
     "category": "Account",
     "question": "How do I create a ZenFlow account?",
-    "answer": "Click on the Register option, provide your email details, create a password, and verify your account using the confirmation email."
+    "answer": "Click on the Register option, provide your email details, create a password, and verify your account using the confirmation email.",
+    "id": "kb_7"
   },
   {
     "title": "Billing Refund",
     "category": "Billing",
     "question": "How can I request a refund?",
-    "answer": "Submit a billing support ticket with your transaction details and reason for requesting a refund. The support team will review your request."
+    "answer": "Submit a billing support ticket with your transaction details and reason for requesting a refund. The support team will review your request.",
+    "id": "kb_8"
   },
   {
     "title": "Billing Address Update",
     "category": "Billing",
     "question": "How do I change my billing address?",
-    "answer": "Go to Account Settings, open Billing Information, update your billing address, and save the changes."
+    "answer": "Go to Account Settings, open Billing Information, update your billing address, and save the changes.",
+    "id": "kb_9"
   },
   {
     "title": "Payment Failure",
     "category": "Billing",
     "question": "What should I do if my payment fails?",
-    "answer": "Check your payment details, ensure sufficient balance, and try again. If the issue continues, contact the billing support team."
+    "answer": "Check your payment details, ensure sufficient balance, and try again. If the issue continues, contact the billing support team.",
+    "id": "kb_10"
   },
   {
     "title": "Subscription Plans",
     "category": "Billing",
     "question": "Where can I view subscription plans?",
-    "answer": "You can view available subscription plans from the Pricing section of your ZenFlow account."
+    "answer": "You can view available subscription plans from the Pricing section of your ZenFlow account.",
+    "id": "kb_11"
   },
   {
     "title": "API Rate Limits",
     "category": "API",
     "question": "What are the API rate limits?",
-    "answer": "API rate limits depend on your subscription plan. If requests exceed the limit, the API will temporarily reject additional requests."
+    "answer": "API rate limits depend on your subscription plan. If requests exceed the limit, the API will temporarily reject additional requests.",
+    "id": "kb_12"
   },
   {
     "title": "API Key Generation",
     "category": "API",
     "question": "How do I generate an API key?",
-    "answer": "Open Developer Settings, select API Keys, and click Generate New Key. Store your API key securely."
+    "answer": "Open Developer Settings, select API Keys, and click Generate New Key. Store your API key securely.",
+    "id": "kb_13"
   },
   {
     "title": "API Authentication",
     "category": "API",
     "question": "How does API authentication work?",
-    "answer": "ZenFlow APIs use API keys for authentication. Every request must include a valid API key."
+    "answer": "ZenFlow APIs use API keys for authentication. Every request must include a valid API key.",
+    "id": "kb_14"
   },
   {
     "title": "Notification Settings",
     "category": "Settings",
     "question": "How do I manage notifications?",
-    "answer": "Open Settings, go to Notifications, and customize email and application notification preferences."
+    "answer": "Open Settings, go to Notifications, and customize email and application notification preferences.",
+    "id": "kb_15"
   },
   {
     "title": "Profile Update",
     "category": "Account",
     "question": "How do I update my profile information?",
-    "answer": "Go to Profile Settings, edit your information, and click Save Changes."
+    "answer": "Go to Profile Settings, edit your information, and click Save Changes.",
+    "id": "kb_16"
   },
   {
     "title": "Two Factor Authentication",
     "category": "Security",
     "question": "Does ZenFlow support two factor authentication?",
-    "answer": "Yes, users can enable two factor authentication from Security Settings for additional account protection."
+    "answer": "Yes, users can enable two factor authentication from Security Settings for additional account protection.",
+    "id": "kb_17"
   },
   {
     "title": "Data Security",
     "category": "Security",
     "question": "How does ZenFlow protect user data?",
-    "answer": "ZenFlow uses secure authentication, encrypted communication, and access controls to protect user information."
+    "answer": "ZenFlow uses secure authentication, encrypted communication, and access controls to protect user information.",
+    "id": "kb_18"
   },
   {
     "title": "Contact Support",
     "category": "Support",
     "question": "How can I contact customer support?",
-    "answer": "Create a support ticket through the dashboard or use the official support contact options."
+    "answer": "Create a support ticket through the dashboard or use the official support contact options.",
+    "id": "kb_19"
   },
   {
     "title": "Ticket Resolution Time",
     "category": "Tickets",
     "question": "How long does it take to resolve a ticket?",
-    "answer": "Resolution time depends on ticket priority and complexity. Critical issues are handled before lower priority requests."
+    "answer": "Resolution time depends on ticket priority and complexity. Critical issues are handled before lower priority requests.",
+    "id": "kb_20"
+  },
+  {
+    "id": "kb_ent_vpn",
+    "title": "Corporate VPN Access (Cisco AnyConnect / OpenVPN)",
+    "category": "Security & Network",
+    "question": "How do I connect to the corporate VPN and resolve VPN access issues?",
+    "answer": "To connect to the corporate VPN, launch Cisco AnyConnect or OpenVPN, enter the gateway vpn.corp.company.com, log in with your single sign-on (SSO) email credentials, and approve the Duo / Okta push notification on your mobile phone. If connection fails, flush your DNS (ipconfig /flushdns) and verify your home Wi-Fi does not block port 443/1194."
+  },
+  {
+    "id": "kb_ent_wifi",
+    "title": "Corporate Office Wi-Fi Setup (WPA3-Enterprise)",
+    "category": "Security & Network",
+    "question": "How do I connect to the office Wi-Fi network?",
+    "answer": "At company offices, select the SSID Corp-Secure-5G. Enter your corporate email username and password. When prompted to accept the digital security certificate from pki.company.com, click Trust / Accept to establish an encrypted high-speed 802.1x session."
+  },
+  {
+    "id": "kb_ent_hardware",
+    "title": "Employee Laptop Refresh & Hardware Replacement Policy",
+    "category": "Hardware & Equipment",
+    "question": "What is the company policy for laptop replacement, monitors, and hardware upgrades?",
+    "answer": "Employees are eligible for a standard laptop refresh every 36 months (3 years) or immediately in case of hardware failure. Standard issue includes Apple MacBook Pro 16 inch (M-series) or Dell Precision Workstation, dual 27-inch 4K monitors, and an ergonomic docking station. Submit an equipment request through ZenFlow ITSM under Category: Hardware."
+  },
+  {
+    "id": "kb_ent_leaves",
+    "title": "Annual Paid Vacation & Sick Leave Policy",
+    "category": "HR & People Operations",
+    "question": "What is our company policy on annual leave, PTO, and sick days?",
+    "answer": "Full-time employees receive 24 days of paid annual vacation leave (PTO) and 10 paid sick days per calendar year. Annual vacation requests must be submitted through the ZenFlow HR Portal at least 5 business days in advance and approved by your reporting manager. Sick leave does not require advance notice; simply notify your manager on Slack before 9:00 AM."
+  },
+  {
+    "id": "kb_ent_software",
+    "title": "Software License Procurement (Figma, GitHub, AWS, JetBrains)",
+    "category": "Software & Tools",
+    "question": "How do I request a software license or cloud tool access?",
+    "answer": "All software licenses (Figma Enterprise, JetBrains All Products Pack, Slack Enterprise Grid, and AWS Developer Sandbox) must be requested via ZenFlow ITSM under Category: Software. Approvals for pre-approved developer packages are automatically granted within 4 business hours."
+  },
+  {
+    "id": "kb_ent_mfa",
+    "title": "Multi-Factor Authentication (MFA) & Okta Device Reset",
+    "category": "Security & Network",
+    "question": "What should I do if I lose my MFA device, phone, or get locked out of Okta?",
+    "answer": "If you lost your MFA device or changed phones, navigate to sso.company.com/recovery, verify your identity using your backup SMS or secondary recovery email, and scan the new QR code in Okta Verify or Google Authenticator. If locked out, submit an urgent ticket to the IT Security Queue for manual identity verification."
+  },
+  {
+    "id": "kb_ent_phishing",
+    "title": "Security Incident & Phishing Email Reporting",
+    "category": "Security & Network",
+    "question": "How do I report a suspicious email, phishing attempt, or security breach?",
+    "answer": "If you receive a suspicious email, click the Report Phishing button directly in Microsoft Outlook or forward the raw email headers to security@company.com. Do not click any links or download attachments. For active system compromises or malware alerts, disconnect from Wi-Fi immediately and call the IT Emergency Hotline."
+  },
+  {
+    "id": "kb_ent_reimburse",
+    "title": "Remote Work Expense & Ergonomic Equipment Allowance",
+    "category": "Billing & Finance",
+    "question": "Can I get reimbursed for home internet or remote workspace equipment?",
+    "answer": "Yes. Remote and hybrid employees can claim up to \\ per month for high-speed home internet and a one-time \\ ergonomics stipend for home office equipment (desk, chair, lighting). Submit your monthly receipt through the ZenFlow Finance Portal under Expense Reimbursement before the 25th of each month."
   }
 ]

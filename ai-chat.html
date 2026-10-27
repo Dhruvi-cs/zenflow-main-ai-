@@ -209,6 +209,8 @@
 
     const API_BASE = (window.location.protocol.startsWith('http') && window.location.port !== '5500' && window.location.port !== '5501') ? '' : 'http://localhost:5000';
 
+    const chatHistory = [];
+
     function sendQuickMessage(text) {
       userInput.value = text;
       sendMessage(text);
@@ -227,6 +229,10 @@
       userInput.disabled = true;
       sendBtn.disabled = true;
 
+      // Add to conversation memory
+      chatHistory.push({ role: 'user', content: text });
+      if (chatHistory.length > 10) chatHistory.splice(0, chatHistory.length - 10);
+
       const typingId = 'typing-' + Date.now();
       chatBody.innerHTML += `<div class="typing-indicator" id="${typingId}"><i class="fa-solid fa-spinner fa-spin"></i> Retrieving answer from knowledge base...</div>`;
       chatBody.scrollTop = chatBody.scrollHeight;
@@ -235,13 +241,15 @@
         const response = await fetch(`${API_BASE}/api/ai/chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: text, query: text })
+          body: JSON.stringify({ message: text, query: text, chat_history: chatHistory })
         });
 
         const data = await response.json();
         document.getElementById(typingId)?.remove();
 
         const aiReply = data.reply || data.answer || data.response || "I have received your request.";
+        chatHistory.push({ role: 'assistant', content: aiReply });
+
         const sources = data.retrieved_sources || [];
         const sourceHtml = sources.length > 0 ? `<div style="margin-top: 8px; font-size: 11.5px; color: #64748b;"><strong>Sources:</strong> ${sources.join(', ')}</div>` : '';
 
@@ -257,6 +265,17 @@
         chatBody.scrollTop = chatBody.scrollHeight;
       }
     }
+
+    // Auto-fill query from URL if launched from Knowledge Base
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const testQ = urlParams.get('test_query') || urlParams.get('query');
+      if (testQ) {
+        userInput.value = testQ;
+        sendMessage(testQ);
+      }
+    });
   </script>
+  <script src="assets/js/nav.js"></script>
 </body>
 </html>

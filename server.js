@@ -90,6 +90,10 @@ app.use(['/api/ai', '/api/chat'], aiRoutes);
 const ticketRoutes = require('./routes/ticketRoutes');
 app.use('/api/tickets', ticketRoutes);
 
+// 6b. Knowledge Base Management Routes
+const knowledgeRoutes = require('./routes/knowledgeRoutes');
+app.use('/api/knowledge', knowledgeRoutes);
+
 // 7. User Profile Routes
 let inMemoryProfile = {
   name: 'Dhruvi Shri',

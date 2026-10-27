@@ -18,11 +18,14 @@ router.post(['/chat', '/query'], async (req, res) => {
     // Proxy request to Python FastAPI RAG microservice
     try {
       const aiEndpoint = process.env.AI_SERVICE_URL || 'http://127.0.0.1:8000/api/v1/rag/query';
+      const chatHistory = Array.isArray(req.body.chat_history) ? req.body.chat_history : [];
+
       const aiRes = await axios.post(
         aiEndpoint,
         {
           query: userQuery,
-          category: category
+          category: category,
+          chat_history: chatHistory
         },
         { timeout: 12000 }
       );

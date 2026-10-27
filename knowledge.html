@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenFlow AI - Enterprise Knowledge Base</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <style>
+        .kb-stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .kb-stat-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .kb-stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: #ede9fe;
+            color: #6366f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        .kb-stat-info h4 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .kb-stat-info span {
+            font-size: 0.82rem;
+            color: #64748b;
+        }
+        .search-filter-section {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .search-box-wrapper {
+            flex: 1;
+            min-width: 260px;
+            position: relative;
+        }
+        .search-box-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+        .search-box-wrapper input {
+            width: 100%;
+            padding: 10px 14px 10px 40px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.92rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-box-wrapper input:focus {
+            border-color: #6366f1;
+        }
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-controls select {
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            color: #334155;
+            outline: none;
+            background: #ffffff;
+            cursor: pointer;
+        }
+        .btn-add-article {
+            background-color: #6366f1;
+            color: #ffffff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        .btn-add-article:hover {
+            background-color: #4f46e5;
+        }
+        .kb-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 18px;
+        }
+        .kb-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+        .kb-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            border-color: #cbd5e1;
+        }
+        .kb-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .kb-category-badge {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+        .kb-card h4 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .kb-card p.kb-question {
+            font-size: 0.84rem;
+            color: #64748b;
+            font-style: italic;
+            margin-bottom: 12px;
+        }
+        .kb-card p.kb-answer-preview {
+            font-size: 0.88rem;
+            color: #334155;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        .kb-card-footer {
+            border-top: 1px solid #f1f5f9;
+            padding-top: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn-view-article {
+            background: transparent;
+            border: none;
+            color: #6366f1;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-view-article:hover {
+            color: #4f46e5;
+            text-decoration: underline;
+        }
+        .btn-delete-article {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.95rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: color 0.2s, background 0.2s;
+        }
+        .btn-delete-article:hover {
+            color: #dc2626;
+            background: #fee2e2;
+        }
+        /* Modals */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1050;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-box {
+            background: #ffffff;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 18px;
+            right: 20px;
+            font-size: 22px;
+            color: #64748b;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>ZenFlow ITSM</h2>
+    <ul>
+        <li><a href="dashboard.html"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="create-ticket.html"><i class="fa-solid fa-ticket"></i> Create Ticket</a></li>
+        <li><a href="history.html"><i class="fa-solid fa-clock-rotate-left"></i> Ticket History</a></li>
+        <li><a href="ai-chat.html"><i class="fa-solid fa-robot"></i> AI Chat</a></li>
+        <li class="active"><a href="knowledge.html"><i class="fa-solid fa-book"></i> Knowledge Base</a></li>
+        <li><a href="profile.html"><i class="fa-solid fa-user"></i> Profile</a></li>
+        <li><a href="index.html" onclick="localStorage.clear(); sessionStorage.clear();"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+    </ul>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="topbar">
+        <div>
+            <h3><i class="fa-solid fa-book text-primary"></i> Company Knowledge Base & RAG Repository</h3>
+            <p style="color: #64748b; font-size: 13px; margin: 2px 0 0 0;">
+                All articles here are embedded into ChromaDB and retrieved in real-time by the AI microservice.
+            </p>
+        </div>
+        <div class="top-icons">
+            <span id="topUserName" style="font-size: 14px; font-weight: 500; color: #475569; margin-right: 12px;">Admin</span>
+            <i class="fa-solid fa-bell"></i>
+            <a href="profile.html" style="color: inherit;"><i class="fa-solid fa-user-circle"></i></a>
+        </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="kb-stats-bar">
+        <div class="kb-stat-card">
+            <div class="kb-stat-icon"><i class="fa-solid fa-file-shield"></i></div>
+            <div class="kb-stat-info">
+                <h4 id="statTotalArticles">--</h4>
+                <span>Active Knowledge Articles</span>
+            </div>
+        </div>
+        <div class="kb-stat-card">
+            <div class="kb-stat-icon" style="background: #dbeafe; color: #2563eb;"><i class="fa-solid fa-layer-group"></i></div>
+            <div class="kb-stat-info">
+                <h4 id="statTotalCategories">--</h4>
+                <span>Knowledge Categories</span>
+            </div>
+        </div>
+        <div class="kb-stat-card">
+            <div class="kb-stat-icon" style="background: #dcfce7; color: #16a34a;"><i class="fa-solid fa-microchip"></i></div>
+            <div class="kb-stat-info">
+                <h4 style="color: #16a34a; font-size: 1.2rem;">● Active</h4>
+                <span>RAG Vectorization Status</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="search-filter-section">
+        <div class="search-box-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="kbSearchInput" placeholder="Search knowledge articles by keyword, title, or answer...">
+        </div>
+        <div class="filter-controls">
+            <select id="categoryFilter" onchange="filterArticles()">
+                <option value="All">All Categories</option>
+            </select>
+            <button class="btn-add-article" onclick="openAddModal()">
+                <i class="fa-solid fa-plus"></i> Add Article / Policy
+            </button>
+        </div>
+    </div>
+
+    <!-- Knowledge Articles Grid -->
+    <div class="kb-grid" id="kbGridContainer">
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #94a3b8;">
+            <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+            <p style="margin-top: 10px;">Loading company documentation from RAG repository...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Add New Knowledge Article -->
+<div class="modal-overlay" id="addArticleModal">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeModal('addArticleModal')">&times;</button>
+        <h3 style="margin-top: 0; color: #0f172a; font-size: 1.25rem;">
+            <i class="fa-solid fa-circle-plus text-primary"></i> Add Company Policy or FAQ
+        </h3>
+        <p style="color: #64748b; font-size: 13px; margin-bottom: 20px;">
+            The new article will be immediately saved to the knowledge store and indexed into ChromaDB for AI chatbot retrieval and automated ticket deflection.
+        </p>
+
+        <form id="addArticleForm" onsubmit="handleCreateArticle(event)">
+            <div class="mb-3">
+                <label style="font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Article / Policy Title *</label>
+                <input type="text" id="newTitle" class="form-control" placeholder="e.g. Corporate VPN Access & Troubleshooting" required>
+            </div>
+
+            <div class="mb-3">
+                <label style="font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Category *</label>
+                <select id="newCategory" class="form-select" required>
+                    <option value="Security & Network">Security & Network</option>
+                    <option value="Hardware & Equipment">Hardware & Equipment</option>
+                    <option value="HR & People Operations">HR & People Operations</option>
+                    <option value="Software & Tools">Software & Tools</option>
+                    <option value="Account">Account</option>
+                    <option value="Tickets">Tickets</option>
+                    <option value="Billing & Finance">Billing & Finance</option>
+                    <option value="General">General</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label style="font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Search Query / Common Question *</label>
+                <input type="text" id="newQuestion" class="form-control" placeholder="e.g. How do I connect to the corporate VPN?" required>
+                <small style="color: #94a3b8; font-size: 11.5px;">Phrase questions naturally as an employee or customer would ask.</small>
+            </div>
+
+            <div class="mb-3">
+                <label style="font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Detailed Resolution / Official Company Policy *</label>
+                <textarea id="newAnswer" class="form-control" rows="5" placeholder="Provide complete step-by-step instructions, portal links, and troubleshooting details..." required></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+                <button type="button" class="btn btn-outline-secondary" onclick="closeModal('addArticleModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="saveArticleBtn">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Save & Vectorize
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: View Article Details -->
+<div class="modal-overlay" id="viewArticleModal">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeModal('viewArticleModal')">&times;</button>
+        <span class="kb-category-badge" id="viewModalCategory" style="margin-bottom: 10px; display: inline-block;">Category</span>
+        <h3 id="viewModalTitle" style="color: #0f172a; margin-bottom: 12px; font-size: 1.3rem;">Article Title</h3>
+        
+        <div style="background: #f8fafc; border-left: 3px solid #6366f1; padding: 10px 14px; border-radius: 4px; margin-bottom: 16px;">
+            <strong style="font-size: 13px; color: #475569;">Target Inquiry:</strong>
+            <div id="viewModalQuestion" style="font-size: 14px; color: #1e293b; margin-top: 4px; font-style: italic;"></div>
+        </div>
+
+        <div>
+            <strong style="font-size: 13px; color: #475569;">Official Policy / Step-by-Step Resolution:</strong>
+            <div id="viewModalAnswer" style="font-size: 14.5px; color: #1e293b; line-height: 1.6; margin-top: 8px; white-space: pre-line;"></div>
+        </div>
+
+        <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; color: #64748b;"><i class="fa-solid fa-check-double text-success"></i> Synchronized with ChromaDB Vector Store</span>
+            <button class="btn btn-sm btn-outline-primary" onclick="testInAiChat()">
+                <i class="fa-solid fa-robot"></i> Test in AI Chat
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+    const API_BASE = (window.location.protocol.startsWith('http') && window.location.port !== '5500' && window.location.port !== '5501') ? '' : 'http://localhost:5000';
+    let allArticles = [];
+    let selectedArticleForTest = null;
+
+    // 1. Fetch Knowledge Articles from Backend
+    async function fetchKnowledgeBase() {
+        try {
+            const res = await fetch(`${API_BASE}/api/knowledge`);
+            if (res.ok) {
+                const data = await res.json();
+                allArticles = data.data || [];
+                populateCategoryFilter(allArticles);
+                renderArticles(allArticles);
+                updateStats(allArticles);
+            } else {
+                throw new Error('Failed to load articles');
+            }
+        } catch (err) {
+            console.error('Error loading knowledge base:', err);
+            document.getElementById('kbGridContainer').innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #dc2626;">
+                    <i class="fa-solid fa-triangle-exclamation fa-2x"></i>
+                    <p style="margin-top: 10px;">Failed to load knowledge base articles. Ensure ZenFlow gateway is online.</p>
+                </div>
+            `;
+        }
+    }
+
+    // 2. Populate Categories Dropdown
+    function populateCategoryFilter(articles) {
+        const categories = [...new Set(articles.map(a => a.category || 'General'))].sort();
+        const select = document.getElementById('categoryFilter');
+        select.innerHTML = '<option value="All">All Categories</option>';
+        categories.forEach(cat => {
+            select.innerHTML += `<option value="${cat}">${cat}</option>`;
+        });
+    }
+
+    // 3. Update Stats Counters
+    function updateStats(articles) {
+        document.getElementById('statTotalArticles').textContent = articles.length;
+        const categories = new Set(articles.map(a => a.category || 'General'));
+        document.getElementById('statTotalCategories').textContent = categories.size;
+    }
+
+    // 4. Render Articles Grid
+    function renderArticles(articles) {
+        const container = document.getElementById('kbGridContainer');
+        if (!articles || articles.length === 0) {
+            container.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #94a3b8;">
+                    <i class="fa-regular fa-folder-open fa-2x"></i>
+                    <p style="margin-top: 10px;">No knowledge articles found matching your criteria.</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = articles.map(art => `
+            <div class="kb-card">
+                <div>
+                    <div class="kb-card-header">
+                        <span class="kb-category-badge">${art.category || 'General'}</span>
+                        <button class="btn-delete-article" title="Delete Article" onclick="deleteArticle('${art.id}', event)">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </div>
+                    <h4>${escapeHtml(art.title)}</h4>
+                    <p class="kb-question"><i class="fa-regular fa-circle-question"></i> ${escapeHtml(art.question)}</p>
+                    <p class="kb-answer-preview">${escapeHtml(art.answer)}</p>
+                </div>
+                <div class="kb-card-footer">
+                    <button class="btn-view-article" onclick="openViewModal('${art.id}')">
+                        Read Full Policy <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <span style="font-size: 11px; color: #94a3b8;"><i class="fa-solid fa-database"></i> Vectorized</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // 5. Filter Articles by Search and Category
+    function filterArticles() {
+        const search = document.getElementById('kbSearchInput').value.toLowerCase().trim();
+        const category = document.getElementById('categoryFilter').value;
+
+        const filtered = allArticles.filter(art => {
+            const matchCategory = category === 'All' || (art.category || '').toLowerCase() === category.toLowerCase();
+            const matchSearch = !search ||
+                (art.title || '').toLowerCase().includes(search) ||
+                (art.question || '').toLowerCase().includes(search) ||
+                (art.answer || '').toLowerCase().includes(search);
+            return matchCategory && matchSearch;
+        });
+
+        renderArticles(filtered);
+    }
+
+    document.getElementById('kbSearchInput').addEventListener('input', filterArticles);
+
+    // 6. Open / Close Modals
+    function openAddModal() {
+        document.getElementById('addArticleModal').style.display = 'flex';
+    }
+
+    function openViewModal(id) {
+        const article = allArticles.find(a => a.id === id);
+        if (!article) return;
+
+        selectedArticleForTest = article;
+        document.getElementById('viewModalCategory').textContent = article.category || 'General';
+        document.getElementById('viewModalTitle').textContent = article.title;
+        document.getElementById('viewModalQuestion').textContent = article.question;
+        document.getElementById('viewModalAnswer').textContent = article.answer;
+        document.getElementById('viewArticleModal').style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // 7. Handle Create Article
+    async function handleCreateArticle(e) {
+        e.preventDefault();
+        const saveBtn = document.getElementById('saveArticleBtn');
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Vectorizing...';
+
+        const payload = {
+            title: document.getElementById('newTitle').value,
+            category: document.getElementById('newCategory').value,
+            question: document.getElementById('newQuestion').value,
+            answer: document.getElementById('newAnswer').value
+        };
+
+        try {
+            const res = await fetch(`${API_BASE}/api/knowledge`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                closeModal('addArticleModal');
+                document.getElementById('addArticleForm').reset();
+                await fetchKnowledgeBase();
+                alert('Success! Company article added and vectorized into ChromaDB.');
+            } else {
+                const errData = await res.json();
+                alert('Error: ' + (errData.message || 'Could not save article.'));
+            }
+        } catch (err) {
+            console.error('Save error:', err);
+            alert('Failed to connect to gateway to save article.');
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save & Vectorize';
+        }
+    }
+
+    // 8. Delete Article
+    async function deleteArticle(id, event) {
+        event.stopPropagation();
+        if (!confirm('Are you sure you want to remove this article from the company knowledge base?')) return;
+
+        try {
+            const res = await fetch(`${API_BASE}/api/knowledge/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                await fetchKnowledgeBase();
+            } else {
+                alert('Failed to delete article.');
+            }
+        } catch (err) {
+            console.error('Delete error:', err);
+        }
+    }
+
+    // 9. Quick test in AI Chat
+    function testInAiChat() {
+        if (selectedArticleForTest) {
+            const q = encodeURIComponent(selectedArticleForTest.question);
+            window.location.href = `ai-chat.html?test_query=${q}`;
+        }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    // Close modals on backdrop click
+    window.addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal-overlay')) {
+            e.target.style.display = 'none';
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', fetchKnowledgeBase);
+</script>
+
+<script src="assets/js/nav.js"></script>
+</body>
+</html>

@@ -30,6 +30,24 @@
       .chat-wrapper {
         margin-left: 0;
         width: 100%;
+        height: calc(100vh - 56px);
+      }
+      .chat-topbar {
+        padding: 10px 14px;
+      }
+      .chat-body {
+        padding: 14px 12px;
+      }
+      .message-bubble {
+        max-width: 88%;
+        font-size: 0.9rem;
+      }
+      .chat-input-bar {
+        padding: 10px 12px;
+      }
+      .ticket-briefing-card {
+        padding: 12px 14px !important;
+        margin: 8px 10px 0 10px !important;
       }
     }
     .chat-topbar {
@@ -48,6 +66,114 @@
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+    /* Ticket Briefing & Quick Prompts */
+    .ticket-briefing-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 16px 24px 0 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .briefing-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .briefing-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .briefing-id {
+      background: #e0e7ff;
+      color: #4338ca;
+      font-weight: 700;
+      font-size: 0.78rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .briefing-title {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #0f172a;
+    }
+    .briefing-badges {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .badge-status {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #e2e8f0;
+      color: #334155;
+    }
+    .badge-priority {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    .briefing-meta {
+      display: flex;
+      gap: 18px;
+      font-size: 0.82rem;
+      color: #64748b;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .briefing-instruction {
+      font-size: 0.84rem;
+      color: #475569;
+      background: #f1f5f9;
+      border-left: 3px solid #2563eb;
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin: 0 0 12px 0;
+      line-height: 1.45;
+    }
+    .quick-prompts-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .quick-prompt-btn {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #334155;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .quick-prompt-btn:hover {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+    }
+    .quick-prompt-btn i {
+      color: #2563eb;
+    }
+    .quick-prompt-btn:hover i {
+      color: #ffffff;
     }
     .chat-body {
       flex: 1;
@@ -165,6 +291,41 @@
       </div>
     </div>
 
+    <!-- Ticket Briefing Card & Quick Prompts -->
+    <div class="ticket-briefing-card" id="ticketBriefingCard">
+      <div class="briefing-header">
+        <div class="briefing-title-group">
+          <span class="briefing-id" id="briefingTicketId">#TICKET</span>
+          <span class="briefing-title" id="briefingTitle">Loading ticket details...</span>
+        </div>
+        <div class="briefing-badges">
+          <span class="badge-status" id="briefingStatus">Open</span>
+          <span class="badge-priority" id="briefingPriority">Medium</span>
+        </div>
+      </div>
+      <div class="briefing-meta">
+        <span><i class="fa-solid fa-headset"></i> Assigned: <strong id="briefingAgent">IT Support Queue</strong></span>
+        <span><i class="fa-solid fa-robot text-primary"></i> <strong>ZenFlow AI Assistant</strong> is active in this room</span>
+      </div>
+      <p class="briefing-instruction">
+        💡 <strong>What you can do here:</strong> You can ask for real-time status updates, request step-by-step troubleshooting, or ask specific technical questions. Our automated AI assistant responds immediately, and assigned IT engineers monitor the session.
+      </p>
+      <div class="quick-prompts-bar">
+        <button type="button" class="quick-prompt-btn" onclick="sendQuickChat('What is the current status and update on this ticket?')">
+          <i class="fa-solid fa-clock-rotate-left"></i> What is the update?
+        </button>
+        <button type="button" class="quick-prompt-btn" onclick="sendQuickChat('Can you provide the step-by-step resolution process for this issue?')">
+          <i class="fa-solid fa-list-check"></i> Step-by-step process
+        </button>
+        <button type="button" class="quick-prompt-btn" onclick="sendQuickChat('Please escalate this ticket to a human senior support engineer.')">
+          <i class="fa-solid fa-user-tie"></i> Request Human Specialist
+        </button>
+        <button type="button" class="quick-prompt-btn" onclick="sendQuickChat('I need an urgent phone callback regarding this incident.')">
+          <i class="fa-solid fa-phone"></i> Request Callback
+        </button>
+      </div>
+    </div>
+
     <div class="chat-body" id="messagesContainer">
       <div style="text-align: center; color: #94a3b8; font-size: 13px; margin-top: 20px;">
         <i class="fa-solid fa-lock"></i> End-to-end IT support room session initialized.
@@ -190,6 +351,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const rawTicketId = urlParams.get('ticketId') || 'general_support';
     const currentTicketId = 'ticket_' + rawTicketId;
+    const API_BASE = (window.location.protocol.startsWith('http') && window.location.port !== '5500' && window.location.port !== '5501') ? '' : 'http://localhost:5000';
 
     let username = localStorage.getItem('zenflow_user') || sessionStorage.getItem('chat_username');
     if (!username) {
@@ -199,12 +361,50 @@
 
     const shortId = rawTicketId.length > 8 ? rawTicketId.slice(-4).toUpperCase() : rawTicketId;
     document.getElementById('ticketHeaderTitle').innerHTML = `<i class="fa-solid fa-comments text-primary"></i> Ticket #${shortId} Live Session`;
+    document.getElementById('briefingTicketId').textContent = '#' + shortId;
+
+    // Load ticket summary for briefing card
+    async function loadTicketBriefing() {
+      try {
+        const res = await fetch(`${API_BASE}/api/tickets/${rawTicketId}`);
+        if (res.ok) {
+          const ticket = await res.json();
+          document.getElementById('briefingTitle').textContent = ticket.title || 'Support Request';
+          document.getElementById('briefingStatus').textContent = ticket.status || 'Open';
+          document.getElementById('briefingPriority').textContent = (ticket.priority || 'Medium') + ' Priority';
+          document.getElementById('briefingAgent').textContent = ticket.assignedAgent || 'IT Support Operations';
+
+          // Set priority badge color
+          const pBadge = document.getElementById('briefingPriority');
+          const pri = (ticket.priority || 'medium').toLowerCase();
+          if (pri === 'critical' || pri === 'high') {
+            pBadge.style.background = '#fee2e2';
+            pBadge.style.color = '#b91c1c';
+          } else if (pri === 'medium') {
+            pBadge.style.background = '#fef3c7';
+            pBadge.style.color = '#92400e';
+          } else {
+            pBadge.style.background = '#e0f2fe';
+            pBadge.style.color = '#0369a1';
+          }
+        }
+      } catch (e) {
+        document.getElementById('briefingTitle').textContent = 'General Support Session';
+      }
+    }
+    loadTicketBriefing();
 
     const messagesContainer = document.getElementById('messagesContainer');
     const connectionStatus = document.getElementById('connectionStatus');
     const messageInput = document.getElementById('messageInput');
     const typingIndicator = document.getElementById('typingIndicator');
     const typingUserSpan = document.getElementById('typingUser');
+
+    // Quick prompt sender
+    function sendQuickChat(text) {
+      messageInput.value = text;
+      handleSendMessage(new Event('submit'));
+    }
 
     // 1. Connect to Node.js Backend Gateway
     const socketUrl = (window.location.protocol.startsWith('http') && window.location.port !== '5500' && window.location.port !== '5501') ? undefined : 'http://localhost:5000';
@@ -253,7 +453,7 @@
 
     // 5. Send message
     function handleSendMessage(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
       const text = messageInput.value.trim();
       if (!text) return;
 
@@ -286,5 +486,6 @@
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
   </script>
+  <script src="assets/js/nav.js"></script>
 </body>
 </html>
