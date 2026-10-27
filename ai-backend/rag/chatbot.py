@@ -25,16 +25,48 @@ def ask_chatbot(
             "status": "error"
         }
 
-    # 1. Conversational Intent & Greeting Detection
+    # 1. System Identity & Model Diagnostics
+    from rag.config import is_gemini_active, LLM_MODEL
     clean_q = re.sub(r'[^\w\s]', '', question.lower().strip())
     q_tokens = clean_q.split()
+
+    if any(k in clean_q for k in ["gemini", "connected to gemini", "are you gemini", "what model", "which ai", "who created you"]):
+        if is_gemini_active():
+            model_info = (
+                f"Yes! I am connected to **Google Gemini** (running `{LLM_MODEL}`) and integrated with "
+                "ZenFlow's enterprise Retrieval-Augmented Generation (RAG) vector database (ChromaDB).\n\n"
+                "I synthesize real-time answers based on your uploaded company documentation!"
+            )
+        else:
+            model_info = (
+                "I am **ZenFlow's AI Support Assistant**. I am currently running on ZenFlow's internal semantic RAG engine "
+                "(ChromaDB vector search with deterministic semantic embeddings).\n\n"
+                "To connect my live generative **Google Gemini** LLM, simply set your `GOOGLE_API_KEY` in the Render environment variables."
+            )
+        return {
+            "requires_human_agent": False,
+            "deflected": True,
+            "can_deflect": True,
+            "confidence_score": 1.0,
+            "retrieval_distance": 0.0,
+            "retrieved_sources": ["ZenFlow System Diagnostics"],
+            "sources": ["ZenFlow System Diagnostics"],
+            "response": model_info,
+            "answer": model_info,
+            "ai_response": model_info,
+            "status": "success"
+        }
+
+    # 2. Conversational Intent & Greeting Detection
     greetings = {"hello", "hi", "hey", "hola", "greetings"}
     small_talk = [
         "how are you", "how are u", "how r u", "who are you", "who r u",
-        "what can you do", "help me", "what is this", "what are you", "good morning", "good evening"
+        "what can you do", "help me", "what is this", "what are you", "good morning", "good evening",
+        "what are you doing", "what are u doing", "what r u doing", "what are u up to"
     ]
 
-    if clean_q in greetings or (len(q_tokens) <= 3 and any(w in greetings for w in q_tokens)):
+    has_greeting_prefix = len(q_tokens) > 0 and q_tokens[0] in greetings and len(q_tokens) <= 7
+    if clean_q in greetings or has_greeting_prefix or (len(q_tokens) <= 3 and any(w in greetings for w in q_tokens)):
         greet_text = (
             "Hello! 👋 I am your **ZenFlow AI Support Assistant**.\n\n"
             "I can assist you with:\n"
@@ -79,12 +111,13 @@ def ask_chatbot(
             "status": "success"
         }
 
-    # 2. Non-Work & Out-of-Scope Query Detection
+    # 3. Non-Work & Out-of-Scope Query Detection
     # Avoid creating junk tickets for human IT technicians for personal queries
     non_work_keywords = [
         "pizza", "burger", "food", "lunch", "dinner", "breakfast", "coffee", "restaurant",
         "recipe", "movie", "song", "music", "cricket", "football", "sports", "joke",
-        "weather", "forecast", "horoscope", "flight", "hotel", "buy shoes", "dating"
+        "weather", "forecast", "horoscope", "flight", "hotel", "buy shoes", "dating",
+        "dance", "sing", "marry", "flirt", "boyfriend", "girlfriend", "love me", "love you"
     ]
     it_keywords = [
         "it", "ticket", "laptop", "vpn", "system", "email", "password", "software",
@@ -95,12 +128,19 @@ def ask_chatbot(
     has_it_context = any(re.search(r'\b' + re.escape(itk) + r'\b', clean_q) for itk in it_keywords)
 
     if is_non_work and not has_it_context:
-        out_of_scope_reply = (
-            "I am ZenFlow, your enterprise IT and workplace support assistant. 🏢\n\n"
-            "I am designed to answer technical questions and workplace policies based on our company's "
-            "knowledge base (such as VPN access, password resets, ticket SLAs, and software troubleshooting).\n\n"
-            "I cannot assist with personal or non-work-related requests such as ordering food, entertainment, or personal errands."
-        )
+        if "dance" in clean_q:
+            out_of_scope_reply = (
+                "I don't have feet or the ability to dance! 💃 I am an enterprise IT support assistant.\n\n"
+                "I am here to help you resolve computer issues, configure VPNs, reset passwords, "
+                "and explain company IT ticket policies."
+            )
+        else:
+            out_of_scope_reply = (
+                "I am ZenFlow, your enterprise IT and workplace support assistant. 🏢\n\n"
+                "I am designed to answer technical questions and workplace policies based on our company's "
+                "knowledge base (such as VPN access, password resets, ticket SLAs, and software troubleshooting).\n\n"
+                "I cannot assist with personal or non-work-related requests such as ordering food, entertainment, or personal errands."
+            )
         return {
             "requires_human_agent": False,
             "deflected": True,
