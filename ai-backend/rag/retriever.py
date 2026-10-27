@@ -56,7 +56,7 @@ def retrieve_documents(query: str, k: int = 3, category: str = None) -> List[Tup
             k=k
         )
 
-    print(f"\n🔍 Retrieved {len(results)} Documents for query: '{query}':")
+    print(f"\n[RETRIEVER] Retrieved {len(results)} Documents for query: '{query}':")
     for i, (doc, score) in enumerate(results, start=1):
         title = doc.metadata.get("title", "Untitled")
         cat = doc.metadata.get("category", "General")

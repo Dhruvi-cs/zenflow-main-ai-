@@ -33,6 +33,15 @@ Current Question:
 
 prompt = ChatPromptTemplate.from_template(SYSTEM_PROMPT)
 
+def stem_word(w: str) -> str:
+    w = w.lower()
+    if w.endswith('ies') and len(w) > 4: return w[:-3] + 'y'
+    if w.endswith('ing') and len(w) > 4: return w[:-3]
+    if w.endswith('ed') and len(w) > 3: return w[:-2]
+    if w.endswith('es') and len(w) > 3: return w[:-2]
+    if w.endswith('s') and not w.endswith('ss') and len(w) > 3: return w[:-1]
+    return w
+
 def generate_response(question: str, context: str, chat_history: str = "") -> str:
     # 1. If live Gemini API key is configured, invoke LangChain ChatGoogleGenerativeAI
     if is_gemini_active():
@@ -61,37 +70,62 @@ def generate_response(question: str, context: str, chat_history: str = "") -> st
         except Exception as e:
             print(f"Notice: Google GenAI generation notice ({e}). Using grounded fallback synthesizer.")
 
-    # 2. Resilient Context-Grounded Synthesizer (Offline & Mock mode)
+    # 2. Resilient Context-Grounded Synthesizer (Offline & Fallback mode)
     if not context or not context.strip():
         return "CANNOT_ANSWER_ESCALATE_TO_HUMAN"
 
-    # Verify semantic keyword overlap between question and context
-    q_words = set(re.findall(r'\b[a-zA-Z]{3,}\b', question.lower()))
-    ctx_words = set(re.findall(r'\b[a-zA-Z]{3,}\b', context.lower()))
-    stopwords = {"the", "and", "for", "with", "that", "this", "what", "how", "why", "who", "when", "where", "can", "does", "are"}
-    meaningful_q = q_words - stopwords
-
-    overlap = meaningful_q.intersection(ctx_words)
-    if not overlap:
-        # No semantic overlap between user question and knowledge base chunks
+    # Extract clean chunks
+    chunks = [c.strip() for c in context.split("\n\n") if c.strip()]
+    if not chunks:
         return "CANNOT_ANSWER_ESCALATE_TO_HUMAN"
 
-    # Search for matching Answer blocks in context chunks
-    # Find chunk with highest keyword overlap
-    chunks = context.split("\n\n")
-    best_chunk = ""
-    best_score = 0
-    for ch in chunks:
-        ch_words = set(re.findall(r'\b[a-zA-Z]{3,}\b', ch.lower()))
-        score = len(meaningful_q.intersection(ch_words))
-        if score > best_score:
-            best_score = score
-            best_chunk = ch
+    # Tokenize and stem query keywords
+    stopwords = {"the", "and", "for", "with", "that", "this", "what", "how", "why", "who", "when", "where", "can", "does", "are", "you", "your", "explain", "tell", "about", "please"}
+    raw_q_words = [w.lower() for w in re.findall(r'\b[a-zA-Z]{3,}\b', question)]
+    meaningful_q = [w for w in raw_q_words if w not in stopwords]
+    stemmed_q = set(stem_word(w) for w in meaningful_q)
 
-    if best_chunk:
+    # Score each chunk
+    scored_chunks = []
+    for ch in chunks:
+        ch_lower = ch.lower()
+        ch_tokens = [w.lower() for w in re.findall(r'\b[a-zA-Z]{3,}\b', ch_lower)]
+        ch_stemmed = set(stem_word(w) for w in ch_tokens)
+
+        # Calculate exact and stemmed matches
+        exact_matches = sum(1 for w in meaningful_q if w in ch_tokens)
+        stem_matches = len(stemmed_q.intersection(ch_stemmed))
+        matches_count = exact_matches + stem_matches
+
+        # Only give phrase boost if at least one query word actually matched
+        phrase_boost = 2 if (matches_count > 0 and any(ph in ch_lower for ph in ["ticket policy", "priority", "password reset", "refund", "resolution"])) else 0
+
+        total_score = exact_matches * 2 + stem_matches + phrase_boost if matches_count > 0 else 0
+        scored_chunks.append((total_score, ch))
+
+    scored_chunks.sort(key=lambda x: x[0], reverse=True)
+    best_score, best_chunk = scored_chunks[0]
+
+    # If the user asked specifically about policies or rules and multiple relevant chunks exist:
+    if "polic" in question.lower() or "rule" in question.lower():
+        policy_answers = []
+        for _, ch in scored_chunks[:2]:
+            ans_m = re.search(r"Answer:\s*(.+?)(?=\nTitle:|\nCategory:|\Z)", ch, re.DOTALL | re.IGNORECASE)
+            title_m = re.search(r"Title:\s*(.+?)(?=\nCategory:|\nQuestion:|\Z)", ch, re.IGNORECASE)
+            if ans_m:
+                t = title_m.group(1).strip() if title_m else "Policy"
+                policy_answers.append(f"• **{t}**: {ans_m.group(1).strip()}")
+        if policy_answers:
+            return "Here are the relevant ZenFlow support policies:\n\n" + "\n\n".join(policy_answers)
+
+    # If we have any matched chunk, extract its clean Answer
+    if best_score > 0:
         ans_match = re.search(r"Answer:\s*(.+?)(?=\nTitle:|\nCategory:|\Z)", best_chunk, re.DOTALL | re.IGNORECASE)
         if ans_match:
             return ans_match.group(1).strip()
-        return best_chunk.strip()
+        # Clean up chunk lines
+        clean_lines = [l for l in best_chunk.splitlines() if not l.startswith("Source:") and not l.startswith("Category:")]
+        return "\n".join(clean_lines).strip()
 
+    # Out of domain query
     return "CANNOT_ANSWER_ESCALATE_TO_HUMAN"
