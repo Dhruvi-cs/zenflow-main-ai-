@@ -194,5 +194,159 @@
     "category": "Billing & Finance",
     "question": "Can I get reimbursed for home internet or remote workspace equipment?",
     "answer": "Yes. Remote and hybrid employees can claim up to \\ per month for high-speed home internet and a one-time \\ ergonomics stipend for home office equipment (desk, chair, lighting). Submit your monthly receipt through the ZenFlow Finance Portal under Expense Reimbursement before the 25th of each month."
+  },
+  {
+    "id": "kb_ent_mfa_overview",
+    "title": "Multi-Factor Authentication (MFA) Setup & Duo / Okta Push",
+    "category": "Security & Network",
+    "question": "How does multi-factor authentication (MFA) work and how do I configure it?",
+    "answer": "Multi-Factor Authentication (MFA) adds a mandatory second layer of identity verification. When logging into company email, Slack, or VPN, you must provide your password plus approve a push notification on your Okta Verify or Duo Mobile app. To enroll a new phone, navigate to sso.company.com/mfa-setup, scan the QR code using your mobile authenticator, and save your 16-digit offline backup recovery code."
+  },
+  {
+    "id": "kb_ent_guest_wifi",
+    "title": "Office Guest Wi-Fi Access for Clients and Visitors",
+    "category": "Security & Network",
+    "question": "How do visiting clients, guests, and contractors connect to office Wi-Fi?",
+    "answer": "Office guests and clients should connect to the SSID named Corp-Guest-Internet. Upon connection, a captive browser portal will appear. The visitor must enter their name, visiting host employee email, and accept the acceptable use policy. A 24-hour temporary guest access code is automatically sent to the host for single-click approval."
+  },
+  {
+    "id": "kb_ent_monitor_dock",
+    "title": "External Monitor & Docking Station Video Display Troubleshooting",
+    "category": "Hardware & Equipment",
+    "question": "How do I fix external 4K monitors not detecting or displaying from my laptop?",
+    "answer": "If your external monitor is not detected: 1) Ensure the Thunderbolt 4 / USB-C docking station is connected to a primary high-speed port. 2) Power cycle the docking station by unplugging its AC power adapter for 15 seconds. 3) On Windows, press Win + P and select Extend. On macOS, go to System Settings > Displays > Detect Displays (hold Option key). 4) Check that the HDMI/DisplayPort cable supports 4K@60Hz."
+  },
+  {
+    "id": "kb_ent_peripherals",
+    "title": "Ergonomic Keyboard, Mouse & Wireless Headset Request",
+    "category": "Hardware & Equipment",
+    "question": "How do I order an ergonomic split keyboard, vertical mouse, or noise-cancelling headset?",
+    "answer": "Employees can order approved ergonomic accessories including Logitech MX Master mice, Ergo K860 split keyboards, and Jabra Evolve2 noise-cancelling headsets directly through ZenFlow ITSM under Category: Hardware. Standard accessory orders up to \\ are pre-approved and shipped to your office desk or home address within 3 business days."
+  },
+  {
+    "id": "kb_ent_battery_health",
+    "title": "Laptop Battery Replacement & Swelling Incident Protocol",
+    "category": "Hardware & Equipment",
+    "question": "What should I do if my laptop battery is draining very fast, not charging, or trackpad is bulging?",
+    "answer": "If your laptop trackpad is lifting or the casing appears swollen, STOP using the device immediately, disconnect AC power, and do not attempt to charge it. A swollen lithium-ion battery is a potential fire hazard. Contact the IT Emergency desk immediately for urgent next-day hardware courier swap."
+  },
+  {
+    "id": "kb_ent_github_aws",
+    "title": "Developer Cloud Access (GitHub Enterprise, GitLab & AWS Sandbox)",
+    "category": "Software & Tools",
+    "question": "How do I request developer access to GitHub Enterprise, GitLab, and AWS Sandbox accounts?",
+    "answer": "Engineering employees can request repository access and AWS development sandboxes by submitting a ZenFlow ticket under Category: Software. Provide your corporate GitHub username, team name, and engineering manager. Approvals are integrated via Slack and access is provisioned via Okta SSO within 2 hours."
+  },
+  {
+    "id": "kb_ent_docker_tools",
+    "title": "Docker Desktop & Local Development Environment Licensing",
+    "category": "Software & Tools",
+    "question": "Does the company provide Docker Desktop, JetBrains, or Visual Studio Enterprise licenses?",
+    "answer": "Yes. All full-time developers are licensed for Docker Desktop Business, JetBrains All Products Pack, and VS Code Remote Containers. To activate your license, launch Docker Desktop or JetBrains and choose Sign In with Single Sign-On (SSO) using your company domain credentials."
+  },
+  {
+    "id": "kb_ent_parental_leave",
+    "title": "Corporate Parental Leave Policy (Maternity & Paternity)",
+    "category": "HR & People Operations",
+    "question": "What is our corporate policy for maternity, paternity, and adoption leave?",
+    "answer": "The company provides 16 weeks of 100% fully paid maternity leave for birthing parents and 8 weeks of 100% fully paid paternity/partner leave for non-birthing parents and adoptive parents. Parental leave can be taken consecutively or flexibly within the first 12 months of the child arrival. Submit your request via the ZenFlow HR Portal at least 30 days prior."
+  },
+  {
+    "id": "kb_ent_health_insurance",
+    "title": "Health Insurance Cashless E-Card & Claims Portal",
+    "category": "HR & People Operations",
+    "question": "How do I download my health insurance cashless card and submit medical claims?",
+    "answer": "Employees and eligible dependents are covered under the Comprehensive Group Health Insurance Policy up to \\,000 per family. To download your digital cashless e-card or submit outpatient medical reimbursement claims, log into the Employee Insurance Portal via Okta SSO or download the MediBuddy mobile app."
+  },
+  {
+    "id": "kb_ent_bereavement",
+    "title": "Compassionate & Bereavement Leave Policy",
+    "category": "HR & People Operations",
+    "question": "How many days of bereavement leave am I entitled to in the event of a family loss?",
+    "answer": "Employees are entitled to 5 consecutive paid business days of bereavement leave for immediate family members and 3 paid days for extended family members. If travel is required, an additional 2 travel days can be granted. Simply notify your manager and People Operations via email or Slack."
+  },
+  {
+    "id": "kb_ent_room_booking",
+    "title": "Conference Room & Hot Desk Booking via Google Calendar / Robin",
+    "category": "Workplace & Facilities",
+    "question": "How do I reserve a conference room, meeting pod, or office desk in corporate buildings?",
+    "answer": "Meeting rooms can be booked directly through Google Calendar by adding the room resource under Add Rooms. To reserve a hot desk, collaborative pod, or ergonomic standing desk, use the Robin Workplace mobile app or visit desk.company.com and select your seat on the interactive 3D office floorplan."
+  },
+  {
+    "id": "kb_ent_clean_desk",
+    "title": "Clean Desk & Automatic Screen Lock Security Policy",
+    "category": "Security & Network",
+    "question": "What is the company compliance policy on clean desks and unattended laptop screen locks?",
+    "answer": "To comply with ISO 27001 and SOC 2 security standards: 1) All laptops must be configured to automatically lock after 5 minutes of inactivity (press Win + L on Windows or Ctrl + Cmd + Q on Mac when stepping away). 2) Confidential documents and employee files must be stored in locked pedestals when away from your desk. 3) Whiteboards containing architecture diagrams must be erased after meetings."
+  },
+  {
+    "id": "kb_ent_usb_storage",
+    "title": "Removable Media & Encrypted USB Storage Compliance Policy",
+    "category": "Security & Network",
+    "question": "Are USB drives or external storage devices permitted on corporate workstations?",
+    "answer": "Unencrypted personal USB flash drives and external hard disks are blocked by Endpoint Data Loss Prevention (DLP) agents. If you require external storage for business tasks, request an IT-managed BitLocker / FileVault hardware-encrypted flash drive via ZenFlow ITSM under Category: Security."
+  },
+  {
+    "id": "kb_ent_stolen_device",
+    "title": "Lost or Stolen Laptop / Mobile Device Incident Protocol",
+    "category": "Security & Network",
+    "question": "What is the mandatory protocol if my company laptop or work phone is lost or stolen?",
+    "answer": "If a corporate device is lost or stolen, report it IMMEDIATELY by calling the 24/7 IT Security Emergency Hotline (+1-800-555-FLOW) or emailing security@company.com. The security response team will trigger an instant remote MDM wipe of all encrypted corporate data and revoke all active SSO session tokens."
+  },
+  {
+    "id": "kb_ent_per_diem",
+    "title": "Business Travel Meals & Accommodation Per Diem Rates",
+    "category": "Billing & Finance",
+    "question": "What are the daily per diem meal and hotel accommodation limits for business travel?",
+    "answer": "For approved business travel, standard domestic meal per diem is \\/day (\\ breakfast, \\ lunch, \\ dinner). International meal per diem is \\/day. Hotel rooms should be booked via the Corporate Travel Portal up to \\/night in standard tiers or \\/night in tier-1 metro areas (NYC, SF, London). Keep all itemized receipts for expense submission."
+  },
+  {
+    "id": "kb_ent_expense_filing",
+    "title": "Concur Expense Reimbursement Submission & Timelines",
+    "category": "Billing & Finance",
+    "question": "How do I submit expense reports and when are reimbursements disbursed?",
+    "answer": "Submit business expense reports via SAP Concur or the ZenFlow Finance Portal before the 25th of each month. Attach itemized GST/VAT receipts. Approved expenses are reimbursed directly into your primary payroll bank account on the first payroll run of the following month."
+  },
+  {
+    "id": "kb_ent_corp_card",
+    "title": "Corporate Credit Card Issuance & Usage Guidelines",
+    "category": "Billing & Finance",
+    "question": "Who is eligible for a corporate credit card and how do I apply?",
+    "answer": "Full-time managers and employees who travel at least twice per quarter are eligible for an American Express Corporate Card. Apply through the Finance Portal with manager sign-off. Corporate cards must only be used for legitimate business travel, client meals, and team events."
+  },
+  {
+    "id": "kb_ent_sla_tiers",
+    "title": "ITSM Incident Priority Levels & Service Level Agreement (SLA) Tiers",
+    "category": "Tickets",
+    "question": "What are ZenFlow Service Level Agreements (SLAs) for Critical, High, Medium, and Low tickets?",
+    "answer": "ZenFlow enforces strict resolution SLAs: 1) Critical (P1): 15-minute response, 2-hour resolution (total system outages). 2) High (P2): 1-hour response, 8-hour resolution (major workflow impairment). 3) Medium (P3): 4-hour response, 24-hour resolution (single user degraded). 4) Low (P4): 1 business day response, 72-hour resolution (general requests)."
+  },
+  {
+    "id": "kb_ent_reopen_ticket",
+    "title": "Reopening Closed Tickets & Requesting Escalation",
+    "category": "Tickets",
+    "question": "Can I reopen a closed or resolved ticket if the issue reoccurs?",
+    "answer": "Yes. Users can reopen any Resolved ticket within 7 business days by replying in the Ticket Live Chat or clicking Reopen Ticket on your Ticket History page. After 7 days, tickets transition to permanently Closed, and a new ticket should be created referencing the previous Ticket ID."
+  },
+  {
+    "id": "kb_ent_ticket_deflection",
+    "title": "Automated Ticket Deflection & AI Self-Service Resolution",
+    "category": "Tickets",
+    "question": "How does automated ticket deflection work in ZenFlow?",
+    "answer": "When you submit a support inquiry, ZenFlow AI vectorizes your query in real-time, matches it against corporate policy embeddings in ChromaDB, and delivers an instant solution. If the proposed resolution solves your issue, click Accept Solution to instantly deflect the ticket without waiting for human agent queues."
+  },
+  {
+    "id": "kb_ent_sso_reset",
+    "title": "Single Sign-On (SSO) Account Lockout & Passwordless Authentication",
+    "category": "Account",
+    "question": "Why is my SSO account locked and how do I unlock my corporate login?",
+    "answer": "Corporate accounts lock after 5 consecutive incorrect password attempts for security protection. To unlock your account, visit sso.company.com/unlock, enter your corporate email, and complete identity verification via your registered mobile number or manager verification code. Locks expire automatically after 30 minutes."
+  },
+  {
+    "id": "kb_ent_email_setup",
+    "title": "Corporate Email & Google Workspace Setup on Mobile Devices",
+    "category": "Account",
+    "question": "How do I configure my company Gmail and Slack on an iPhone or Android phone?",
+    "answer": "To set up corporate email and Slack on personal mobile devices: 1) Download the Google Device Policy / Intune Company Portal app. 2) Sign in with your corporate email. 3) Accept the corporate security profile (requires 6-digit device passcode and biometric lock). 4) Open Gmail and Slack to access company communications."
   }
 ]

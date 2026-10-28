@@ -1,5 +1,6 @@
 # ai-backend/rag/retriever.py - Knowledge Base Document Retriever
 import os
+import re
 from typing import List, Tuple
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
@@ -8,6 +9,28 @@ from rag.config import VECTOR_DB_PATH
 from rag.embedder import get_embeddings, create_vector_db
 
 _db_instance = None
+
+def expand_query(q: str) -> str:
+    """Normalize common IT synonyms and domain abbreviations for higher semantic recall."""
+    if not q:
+        return ""
+    expansions = [
+        (r'\bmultifactor\b', 'multi-factor multi factor mfa'),
+        (r'\bmfa\b', 'multi-factor authentication mfa okta duo'),
+        (r'\b2fa\b', 'two-factor authentication 2fa security settings'),
+        (r'\bvpn\b', 'corporate vpn cisco anyconnect openvpn connection'),
+        (r'\bwifi\b', 'wi-fi wireless office network 802.1x ssid'),
+        (r'\bpto\b', 'paid time off annual vacation leave'),
+        (r'\bsick leave\b', 'sick days medical compassionate leave'),
+        (r'\bsso\b', 'single sign-on okta corporate credentials login'),
+        (r'\bmacbook\b', 'apple macbook laptop hardware equipment refresh'),
+        (r'\bdell\b', 'dell precision laptop workstation hardware'),
+        (r'\bmonitor\b', 'external 4k monitor screen display docking station')
+    ]
+    q_expanded = q
+    for pat, rep in expansions:
+        q_expanded = re.sub(pat, rep, q_expanded, flags=re.IGNORECASE)
+    return q_expanded
 
 def get_vector_db() -> Chroma:
     global _db_instance
@@ -36,12 +59,13 @@ def get_vector_db() -> Chroma:
 def retrieve_documents(query: str, k: int = 3, category: str = None) -> List[Tuple[Document, float]]:
     db = get_vector_db()
     results = []
+    search_q = expand_query(query)
 
     # 1. Try category-filtered retrieval if specific category is supplied
     if category and category.lower() not in ["general", "all", "other", "support request"]:
         try:
             results = db.similarity_search_with_score(
-                query,
+                search_q,
                 k=k,
                 filter={"category": category}
             )
@@ -52,7 +76,7 @@ def retrieve_documents(query: str, k: int = 3, category: str = None) -> List[Tup
     # 2. If filtered search yielded no results, query across entire knowledge base
     if not results:
         results = db.similarity_search_with_score(
-            query,
+            search_q,
             k=k
         )
 

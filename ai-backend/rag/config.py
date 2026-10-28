@@ -17,7 +17,8 @@ load_dotenv(BASE_DIR.parent / ".env")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
 CONFIDENCE_THRESHOLD = float(os.getenv("CONFIDENCE_THRESHOLD", "0.60"))
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "models/text-embedding-004")
-LLM_MODEL = os.getenv("LLM_MODEL", "gemini-1.5-flash")
+raw_model = os.getenv("LLM_MODEL", "gemini-1.5-flash").strip()
+LLM_MODEL = "gemini-1.5-flash" if ("2.5" in raw_model or not raw_model) else raw_model
 
 def is_gemini_active() -> bool:
     if not GOOGLE_API_KEY:

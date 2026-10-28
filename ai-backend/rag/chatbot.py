@@ -161,7 +161,7 @@ def ask_chatbot(
     # Contextual Follow-Up Query Resolution:
     # If the user asks a follow-up ("tell again", "step by step", "whole process", "more details", "what next")
     # without specifying the noun, inherit the topic from the previous user question in history!
-    follow_up_cues = ["again", "step by step", "whole process", "more detail", "how to do", "what next", "continue", "explain more", "steps", "tell more"]
+    follow_up_cues = ["again", "step by step", "whole process", "more detail", "how to do", "what next", "continue", "explain more", "steps", "tell more", "what about", "how about", "and what", "and how"]
     is_follow_up = any(cue in clean_q for cue in follow_up_cues) and len(q_tokens) <= 9
 
     resolved_query = question

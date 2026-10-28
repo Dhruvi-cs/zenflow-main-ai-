@@ -67,24 +67,20 @@
       align-items: center;
       gap: 10px;
     }
-    /* Ticket Briefing & Quick Prompts */
-    .ticket-briefing-card {
+    /* Compact Ticket Strip & Collapsible Drawer */
+    .ticket-compact-strip {
       background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 16px 20px;
-      margin: 16px 24px 0 24px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-    }
-    .briefing-header {
+      border-bottom: 1px solid #e2e8f0;
+      padding: 8px 24px;
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       gap: 12px;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
+      flex-shrink: 0;
+      min-height: 44px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
     }
-    .briefing-title-group {
+    .strip-left {
       display: flex;
       align-items: center;
       gap: 10px;
@@ -95,64 +91,95 @@
       color: #4338ca;
       font-weight: 700;
       font-size: 0.78rem;
-      padding: 4px 8px;
+      padding: 3px 8px;
       border-radius: 6px;
     }
-    .briefing-title {
+    .strip-title {
       font-weight: 600;
-      font-size: 1rem;
+      font-size: 0.92rem;
       color: #0f172a;
-    }
-    .briefing-badges {
-      display: flex;
-      gap: 8px;
-      align-items: center;
+      max-width: 320px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .badge-status {
-      padding: 3px 10px;
+      padding: 2px 8px;
       border-radius: 20px;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 600;
       background: #e2e8f0;
       color: #334155;
     }
     .badge-priority {
-      padding: 3px 10px;
+      padding: 2px 8px;
       border-radius: 20px;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 600;
       background: #fee2e2;
       color: #b91c1c;
     }
-    .briefing-meta {
+    .strip-toggle-btn {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #475569;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .strip-toggle-btn:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+    .ticket-details-drawer {
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 12px 24px;
+      font-size: 0.84rem;
+      flex-shrink: 0;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .drawer-meta {
       display: flex;
       gap: 18px;
-      font-size: 0.82rem;
       color: #64748b;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
       flex-wrap: wrap;
     }
-    .briefing-instruction {
-      font-size: 0.84rem;
+    .drawer-instruction {
+      font-size: 0.8rem;
       color: #475569;
-      background: #f1f5f9;
+      background: #ffffff;
       border-left: 3px solid #2563eb;
-      padding: 8px 12px;
+      padding: 6px 10px;
       border-radius: 4px;
-      margin: 0 0 12px 0;
-      line-height: 1.45;
+      margin: 0;
+      line-height: 1.4;
     }
-    .quick-prompts-bar {
+    .quick-action-strip {
+      background: #ffffff;
+      padding: 6px 20px;
       display: flex;
       gap: 8px;
       overflow-x: auto;
-      padding-bottom: 4px;
+      border-top: 1px solid #f1f5f9;
       -webkit-overflow-scrolling: touch;
+      flex-shrink: 0;
     }
     .quick-prompt-btn {
       background: #f8fafc;
       border: 1px solid #cbd5e1;
-      padding: 6px 12px;
+      padding: 5px 12px;
       border-radius: 20px;
       font-size: 0.78rem;
       font-weight: 500;
@@ -291,49 +318,56 @@
       </div>
     </div>
 
-    <!-- Ticket Briefing Card & Quick Prompts -->
-    <div class="ticket-briefing-card" id="ticketBriefingCard">
-      <div class="briefing-header">
-        <div class="briefing-title-group">
-          <span class="briefing-id" id="briefingTicketId">#TICKET</span>
-          <span class="briefing-title" id="briefingTitle">Loading ticket details...</span>
-        </div>
-        <div class="briefing-badges">
-          <span class="badge-status" id="briefingStatus">Open</span>
-          <span class="badge-priority" id="briefingPriority">Medium</span>
-        </div>
+    <!-- Compact Slim Ticket Strip (<45px) -->
+    <div class="ticket-compact-strip">
+      <div class="strip-left">
+        <span class="briefing-id" id="briefingTicketId">#TICKET</span>
+        <span class="strip-title" id="briefingTitle">Loading ticket details...</span>
+        <span class="badge-status" id="briefingStatus">Open</span>
+        <span class="badge-priority" id="briefingPriority">Medium Priority</span>
       </div>
-      <div class="briefing-meta">
-        <span><i class="fa-solid fa-headset"></i> Assigned: <strong id="briefingAgent">IT Support Queue</strong></span>
-        <span><i class="fa-solid fa-robot text-primary"></i> <strong>ZenFlow AI Assistant</strong> is active in this room</span>
-      </div>
-      <p class="briefing-instruction">
-        💡 <strong>What you can do here:</strong> You can ask for real-time status updates, request step-by-step troubleshooting, or ask specific technical questions. Our automated AI assistant responds immediately, and assigned IT engineers monitor the session.
-      </p>
-      <div class="quick-prompts-bar">
-        <button type="button" class="quick-prompt-btn" onclick="sendQuickChat('What is the current status and update on this ticket?')">
-          <i class="fa-solid fa-clock-rotate-left"></i> What is the update?
-        </button>
-        <button type="button" class="quick-prompt-btn" onclick="sendQuickChat('Can you provide the step-by-step resolution process for this issue?')">
-          <i class="fa-solid fa-list-check"></i> Step-by-step process
-        </button>
-        <button type="button" class="quick-prompt-btn" onclick="sendQuickChat('Please escalate this ticket to a human senior support engineer.')">
-          <i class="fa-solid fa-user-tie"></i> Request Human Specialist
-        </button>
-        <button type="button" class="quick-prompt-btn" onclick="sendQuickChat('I need an urgent phone callback regarding this incident.')">
-          <i class="fa-solid fa-phone"></i> Request Callback
+      <div class="strip-right">
+        <button type="button" class="strip-toggle-btn" id="toggleDetailsBtn" onclick="toggleTicketDetails()">
+          <i class="fa-solid fa-circle-info"></i> <span id="toggleDetailsText">Details</span> <i class="fa-solid fa-chevron-down" id="toggleDetailsIcon"></i>
         </button>
       </div>
     </div>
 
+    <!-- Collapsible Ticket Details Drawer (Hidden by default to give maximum space to chat!) -->
+    <div class="ticket-details-drawer" id="ticketDetailsDrawer" style="display: none;">
+      <div class="drawer-meta">
+        <span><i class="fa-solid fa-headset text-primary"></i> Assigned: <strong id="briefingAgent">IT Support Queue</strong></span>
+        <span><i class="fa-solid fa-robot text-success"></i> <strong>ZenFlow AI Assistant</strong> active</span>
+      </div>
+      <p class="drawer-instruction">
+        💡 <strong>Session Info:</strong> You can ask for real-time status updates, request step-by-step troubleshooting, or ask technical questions. Our automated assistant responds immediately, and assigned IT engineers monitor the session.
+      </p>
+    </div>
+
     <div class="chat-body" id="messagesContainer">
-      <div style="text-align: center; color: #94a3b8; font-size: 13px; margin-top: 20px;">
+      <div style="text-align: center; color: #94a3b8; font-size: 13px; margin-top: 10px;">
         <i class="fa-solid fa-lock"></i> End-to-end IT support room session initialized.
       </div>
     </div>
 
     <div class="typing-status" id="typingIndicator" style="display: none;">
       <i class="fa-solid fa-ellipsis fa-fade"></i> <span id="typingUser">Support Agent</span> is typing...
+    </div>
+
+    <!-- Quick Prompt Pills Row (Conveniently placed above the input bar) -->
+    <div class="quick-action-strip">
+      <button type="button" class="quick-prompt-btn" onclick="sendQuickChat('What is the current status and update on this ticket?')">
+        <i class="fa-solid fa-clock-rotate-left"></i> What is the update?
+      </button>
+      <button type="button" class="quick-prompt-btn" onclick="sendQuickChat('Can you provide the step-by-step resolution process for this issue?')">
+        <i class="fa-solid fa-list-check"></i> Step-by-step process
+      </button>
+      <button type="button" class="quick-prompt-btn" onclick="sendQuickChat('Please escalate this ticket to a human senior support engineer.')">
+        <i class="fa-solid fa-user-tie"></i> Request Human Specialist
+      </button>
+      <button type="button" class="quick-prompt-btn" onclick="sendQuickChat('I need an urgent phone callback regarding this incident.')">
+        <i class="fa-solid fa-phone"></i> Request Callback
+      </button>
     </div>
 
     <form class="chat-input-bar" id="chatInputForm" onsubmit="handleSendMessage(event)">
@@ -399,6 +433,19 @@
     const messageInput = document.getElementById('messageInput');
     const typingIndicator = document.getElementById('typingIndicator');
     const typingUserSpan = document.getElementById('typingUser');
+
+    // Toggle expandable ticket details drawer
+    function toggleTicketDetails() {
+      const drawer = document.getElementById('ticketDetailsDrawer');
+      const icon = document.getElementById('toggleDetailsIcon');
+      if (drawer.style.display === 'none' || drawer.style.display === '') {
+        drawer.style.display = 'block';
+        icon.className = 'fa-solid fa-chevron-up';
+      } else {
+        drawer.style.display = 'none';
+        icon.className = 'fa-solid fa-chevron-down';
+      }
+    }
 
     // Quick prompt sender
     function sendQuickChat(text) {

@@ -42,30 +42,39 @@ def stem_word(w: str) -> str:
 def generate_response(question: str, context: str, chat_history: str = "") -> str:
     # 1. If live Gemini API key is configured, invoke generative models (Direct REST + LangChain)
     if is_gemini_active():
-        # Attempt 1: Direct Google Generative Language REST API (supports all key formats including new AQ. auth keys)
+        # Attempt 1: Native REST API via urllib (Zero external dependencies, 100% reliable across environments)
         try:
-            import requests
+            import urllib.request
+            import urllib.error
+            import json
             prompt_str = f"{SYSTEM_PROMPT}\n\nConversation History:\n{chat_history}\n\nCompany Documentation Context:\n{context}\n\nUser Question:\n{question}"
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{LLM_MODEL}:generateContent?key={GOOGLE_API_KEY}"
-            headers = {
-                "Content-Type": "application/json",
-                "x-goog-api-key": GOOGLE_API_KEY
-            }
-            payload = {
+            payload = json.dumps({
                 "contents": [{"parts": [{"text": prompt_str}]}],
                 "generationConfig": {"temperature": 0.2, "maxOutputTokens": 800}
-            }
-            resp = requests.post(url, headers=headers, json=payload, timeout=8)
-            if resp.status_code == 200:
-                data = resp.json()
+            }).encode("utf-8")
+            req = urllib.request.Request(
+                url,
+                data=payload,
+                headers={
+                    "Content-Type": "application/json",
+                    "x-goog-api-key": GOOGLE_API_KEY
+                }
+            )
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
                 candidates = data.get("candidates", [])
                 if candidates:
                     parts = candidates[0].get("content", {}).get("parts", [])
                     txt = "".join(p.get("text", "") for p in parts).strip()
                     if txt:
+                        print(f"[GEMINI] Successfully generated response with {LLM_MODEL}")
                         return txt
-        except Exception:
-            pass
+        except urllib.error.HTTPError as http_err:
+            err_body = http_err.read().decode("utf-8", errors="ignore")
+            print(f"[GEMINI HTTP ERROR] Code {http_err.code}: {err_body}")
+        except Exception as rest_e:
+            print(f"[GEMINI REST NOTICE] {type(rest_e).__name__}: {rest_e}")
 
         # Attempt 2: LangChain ChatGoogleGenerativeAI
         try:
@@ -94,7 +103,7 @@ def generate_response(question: str, context: str, chat_history: str = "") -> st
             if result:
                 return result
         except Exception as e:
-            print(f"Notice: Google GenAI generation notice ({e}). Using grounded fallback synthesizer.")
+            print(f"[GEMINI LANGCHAIN NOTICE] {e}")
 
     # 2. Resilient Context-Grounded Synthesizer (Offline & Fallback mode)
     if not context or not context.strip():
