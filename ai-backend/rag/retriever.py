@@ -16,16 +16,19 @@ def expand_query(q: str) -> str:
         return ""
     expansions = [
         (r'\bmultifactor\b', 'multi-factor multi factor mfa'),
-        (r'\bmfa\b', 'multi-factor authentication mfa okta duo'),
+        (r'\bmfas?\b', 'multi-factor authentication mfa okta duo'),
         (r'\b2fa\b', 'two-factor authentication 2fa security settings'),
-        (r'\bvpn\b', 'corporate vpn cisco anyconnect openvpn connection'),
+        (r'\bvpns?\b', 'corporate vpn cisco anyconnect openvpn connection gateway credentials configure'),
         (r'\bwifi\b', 'wi-fi wireless office network 802.1x ssid'),
         (r'\bpto\b', 'paid time off annual vacation leave'),
         (r'\bsick leave\b', 'sick days medical compassionate leave'),
         (r'\bsso\b', 'single sign-on okta corporate credentials login'),
-        (r'\bmacbook\b', 'apple macbook laptop hardware equipment refresh'),
+        (r'\bfigma\b', 'figma enterprise ui ux design license workspace team seat editor'),
+        (r'\bjetbrains\b', 'jetbrains all products pack intellij idea pycharm license activation code'),
+        (r'\blicenses?\b', 'software licenses license procurement figma jetbrains slack aws developer access'),
+        (r'\bmacbooks?\b', 'apple macbook laptop hardware equipment refresh'),
         (r'\bdell\b', 'dell precision laptop workstation hardware'),
-        (r'\bmonitor\b', 'external 4k monitor screen display docking station')
+        (r'\bmonitors?\b', 'external 4k monitor screen display docking station')
     ]
     q_expanded = q
     for pat, rep in expansions:

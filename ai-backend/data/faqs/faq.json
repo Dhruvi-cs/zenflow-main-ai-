@@ -175,6 +175,20 @@
     "answer": "All software licenses (Figma Enterprise, JetBrains All Products Pack, Slack Enterprise Grid, and AWS Developer Sandbox) must be requested via ZenFlow ITSM under Category: Software. Approvals for pre-approved developer packages are automatically granted within 4 business hours."
   },
   {
+    "id": "kb_ent_figma",
+    "title": "Figma Enterprise License & Design Workspace Provisioning",
+    "category": "Software & Tools",
+    "question": "Tell in detail about Figma Enterprise access, licenses, and workspace permissions",
+    "answer": "Figma Enterprise provides full Design and FigJam editor seats for UI/UX designers, product managers, and frontend engineers. To request an Editor seat: 1. Navigate to Create Ticket -> Category: Software -> Select Figma Enterprise Seat. 2. Specify your product squad name and team design manager. 3. Approvals are integrated via Slack and your license is provisioned via Okta SSO within 2 business hours. Note: Viewer-Restricted accounts are free and pre-assigned to all employees by default for reviewing prototypes without consuming paid editor seats."
+  },
+  {
+    "id": "kb_ent_vpn_config",
+    "title": "Corporate VPN Client Configuration & Setup Guide",
+    "category": "Security & Network",
+    "question": "How do I configure and connect to corporate VPNs on laptop or mobile?",
+    "answer": "To configure and connect to the corporate VPN: 1. Download and install Cisco AnyConnect or OpenVPN from the Company Software Portal (portal.company.com/software). 2. Enter gateway server address: vpn.corp.company.com. 3. Enter your corporate email and SSO password. 4. Complete the 2FA push on Duo or Okta Verify mobile app. 5. Once the lock icon turns green, your secure tunnel is active and you can access internal staging servers, Jira, and development databases. If connection fails, flush your DNS (ipconfig /flushdns) or disconnect from public captive portals."
+  },
+  {
     "id": "kb_ent_mfa",
     "title": "Multi-Factor Authentication (MFA) & Okta Device Reset",
     "category": "Security & Network",

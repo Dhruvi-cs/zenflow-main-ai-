@@ -40,9 +40,49 @@ def stem_word(w: str) -> str:
     return w
 
 def generate_response(question: str, context: str, chat_history: str = "") -> str:
-    # 1. If live Gemini API key is configured, invoke generative models (Direct REST + LangChain)
+    import os
+
+    # 1. Attempt Groq API (Ultra-fast enterprise Llama 3.3 70B generative completion)
+    groq_key = os.getenv("GROQ_API_KEY", "").strip()
+    if groq_key and not groq_key.startswith("mock_") and len(groq_key) >= 20:
+        try:
+            import urllib.request
+            import urllib.error
+            import json
+            g_url = "https://api.groq.com/openai/v1/chat/completions"
+            prompt_full = f"{SYSTEM_PROMPT}\n\nConversation History:\n{chat_history}\n\nCompany Documentation Context:\n{context}\n\nUser Question:\n{question}"
+            g_payload = json.dumps({
+                "model": "llama-3.3-70b-versatile",
+                "messages": [
+                    {"role": "user", "content": prompt_full}
+                ],
+                "temperature": 0.2,
+                "max_tokens": 800
+            }).encode("utf-8")
+            g_req = urllib.request.Request(
+                g_url,
+                data=g_payload,
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {groq_key}",
+                    "User-Agent": "ZenFlow-ITSM/1.0"
+                }
+            )
+            with urllib.request.urlopen(g_req, timeout=12) as g_resp:
+                g_data = json.loads(g_resp.read().decode("utf-8"))
+                g_txt = g_data["choices"][0]["message"]["content"].strip()
+                if g_txt:
+                    print("[GROQ] Successfully generated response with llama-3.3-70b-versatile")
+                    return g_txt
+        except urllib.error.HTTPError as ghe:
+            err_b = ghe.read().decode("utf-8", errors="ignore")
+            print(f"[GROQ HTTP ERROR] Code {ghe.code}: {err_b}")
+        except Exception as ge:
+            print(f"[GROQ NOTICE] {ge}")
+
+    # 2. Attempt Google Gemini API (Direct REST + LangChain)
     if is_gemini_active():
-        # Attempt 1: Native REST API via urllib (Zero external dependencies, 100% reliable across environments)
+        # Attempt 2A: Native REST API via urllib (Zero external dependencies, 100% reliable across environments)
         try:
             import urllib.request
             import urllib.error
@@ -76,9 +116,8 @@ def generate_response(question: str, context: str, chat_history: str = "") -> st
         except Exception as rest_e:
             print(f"[GEMINI REST NOTICE] {type(rest_e).__name__}: {rest_e}")
 
-        # Attempt 2: LangChain ChatGoogleGenerativeAI
+        # Attempt 2B: LangChain ChatGoogleGenerativeAI
         try:
-            import os
             os.environ["GEMINI_API_KEY"] = GOOGLE_API_KEY
             os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
             from langchain_google_genai import ChatGoogleGenerativeAI
@@ -105,41 +144,7 @@ def generate_response(question: str, context: str, chat_history: str = "") -> st
         except Exception as e:
             print(f"[GEMINI LANGCHAIN NOTICE] {e}")
 
-    # Optional Attempt 3: Groq Generative API (Ultra-fast free cloud LLM fallback)
-    import os
-    groq_key = os.getenv("GROQ_API_KEY", "").strip()
-    if groq_key and not groq_key.startswith("mock_") and len(groq_key) > 15:
-        try:
-            import urllib.request
-            import json
-            g_url = "https://api.groq.com/openai/v1/chat/completions"
-            prompt_full = f"{SYSTEM_PROMPT}\n\nConversation History:\n{chat_history}\n\nCompany Documentation Context:\n{context}\n\nUser Question:\n{question}"
-            g_payload = json.dumps({
-                "model": "llama-3.3-70b-versatile",
-                "messages": [
-                    {"role": "user", "content": prompt_full}
-                ],
-                "temperature": 0.2,
-                "max_tokens": 800
-            }).encode("utf-8")
-            g_req = urllib.request.Request(
-                g_url,
-                data=g_payload,
-                headers={
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {groq_key}"
-                }
-            )
-            with urllib.request.urlopen(g_req, timeout=10) as g_resp:
-                g_data = json.loads(g_resp.read().decode("utf-8"))
-                g_txt = g_data["choices"][0]["message"]["content"].strip()
-                if g_txt:
-                    print("[GROQ] Successfully generated response with llama-3.3-70b-versatile")
-                    return g_txt
-        except Exception as ge:
-            print(f"[GROQ NOTICE] {ge}")
-
-    # 2. Resilient Context-Grounded Synthesizer (Offline & Fallback mode)
+    # 3. Resilient Context-Grounded Synthesizer (Offline & Fallback mode)
     if not context or not context.strip():
         return "CANNOT_ANSWER_ESCALATE_TO_HUMAN"
 
@@ -166,10 +171,14 @@ def generate_response(question: str, context: str, chat_history: str = "") -> st
         stem_matches = len(stemmed_q.intersection(ch_stemmed))
         matches_count = exact_matches + stem_matches
 
+        # Title relevance boost
+        title_line = next((l for l in ch.splitlines() if l.startswith("Title:")), "").lower()
+        title_matches = sum(3 for w in meaningful_q if w in title_line)
+
         # Only give phrase boost if at least one query word actually matched
         phrase_boost = 2 if (matches_count > 0 and any(ph in ch_lower for ph in ["ticket policy", "priority", "password reset", "refund", "resolution"])) else 0
 
-        total_score = exact_matches * 2 + stem_matches + phrase_boost if matches_count > 0 else 0
+        total_score = exact_matches * 2 + stem_matches + title_matches + phrase_boost if (matches_count > 0 or title_matches > 0) else 0
         scored_chunks.append((total_score, ch))
 
     scored_chunks.sort(key=lambda x: x[0], reverse=True)

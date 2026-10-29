@@ -40,6 +40,14 @@ def ingest():
     print(f"Generated {len(chunks)} chunks for semantic vectorization.")
 
     # 3. Vectorization with ChromaDB
+    import shutil
+    if VECTOR_DB_PATH.exists():
+        try:
+            shutil.rmtree(VECTOR_DB_PATH)
+            print("[CLEAN] Purged old Chroma vector index.")
+        except Exception as ce:
+            print(f"[CLEAN NOTICE] {ce}")
+
     embeddings = get_embeddings()
     print("[INIT] Initializing embeddings and generating Chroma collection...")
 

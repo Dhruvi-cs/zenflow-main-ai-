@@ -126,6 +126,74 @@ def debug_gemini():
 
     return diagnostics
 
+@app.get("/api/v1/diagnostics")
+@app.get("/api/v1/debug-groq")
+def debug_groq_and_all():
+    from rag.config import GOOGLE_API_KEY, GROQ_API_KEY, LLM_MODEL, is_gemini_active, is_groq_active, get_active_provider
+    import urllib.request
+    import urllib.error
+    import json
+
+    groq_masked = ""
+    if GROQ_API_KEY:
+        k = GROQ_API_KEY.strip()
+        groq_masked = f"{k[:7]}...{k[-4:]} (length: {len(k)})"
+
+    gemini_masked = ""
+    if GOOGLE_API_KEY:
+        k = GOOGLE_API_KEY.strip()
+        gemini_masked = f"{k[:7]}...{k[-4:]} (length: {len(k)})"
+
+    diag = {
+        "active_provider": get_active_provider(),
+        "groq": {
+            "key_configured": bool(GROQ_API_KEY),
+            "key_masked": groq_masked,
+            "is_active": is_groq_active(),
+            "live_test": {}
+        },
+        "gemini": {
+            "key_configured": bool(GOOGLE_API_KEY),
+            "key_masked": gemini_masked,
+            "is_active": is_gemini_active(),
+            "model": LLM_MODEL
+        }
+    }
+
+    # Live test Groq
+    if GROQ_API_KEY:
+        try:
+            g_url = "https://api.groq.com/openai/v1/chat/completions"
+            g_payload = json.dumps({
+                "model": "llama-3.3-70b-versatile",
+                "messages": [{"role": "user", "content": "Reply with only ONLINE."}],
+                "max_tokens": 10
+            }).encode("utf-8")
+            g_req = urllib.request.Request(
+                g_url,
+                data=g_payload,
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {GROQ_API_KEY.strip()}",
+                    "User-Agent": "ZenFlow-ITSM/1.0"
+                }
+            )
+            with urllib.request.urlopen(g_req, timeout=10) as r:
+                data = json.loads(r.read().decode("utf-8"))
+                diag["groq"]["live_test"] = {
+                    "status": "connected_200",
+                    "reply": data["choices"][0]["message"]["content"].strip()
+                }
+        except urllib.error.HTTPError as he:
+            diag["groq"]["live_test"] = {
+                "http_status": he.code,
+                "error": he.read().decode("utf-8", errors="ignore")
+            }
+        except Exception as e:
+            diag["groq"]["live_test"] = {"error": str(e)}
+
+    return diag
+
 @app.post("/api/v1/rag/query", response_model=QueryResponse)
 @app.post("/api/v1/rag/chat", response_model=QueryResponse)
 async def query_rag(payload: QueryRequest):
