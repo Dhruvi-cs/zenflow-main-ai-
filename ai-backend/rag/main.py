@@ -160,37 +160,46 @@ def debug_groq_and_all():
         }
     }
 
-    # Live test Groq
+    # Live test Groq across free-tier models
     if GROQ_API_KEY:
-        try:
-            g_url = "https://api.groq.com/openai/v1/chat/completions"
-            g_payload = json.dumps({
-                "model": "llama-3.3-70b-versatile",
-                "messages": [{"role": "user", "content": "Reply with only ONLINE."}],
-                "max_tokens": 10
-            }).encode("utf-8")
-            g_req = urllib.request.Request(
-                g_url,
-                data=g_payload,
-                headers={
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {GROQ_API_KEY.strip()}",
-                    "User-Agent": "ZenFlow-ITSM/1.0"
-                }
-            )
-            with urllib.request.urlopen(g_req, timeout=10) as r:
-                data = json.loads(r.read().decode("utf-8"))
+        groq_models = ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "llama3-8b-8192"]
+        for g_model in groq_models:
+            try:
+                g_url = "https://api.groq.com/openai/v1/chat/completions"
+                g_payload = json.dumps({
+                    "model": g_model,
+                    "messages": [{"role": "user", "content": "Reply with only ONLINE."}],
+                    "max_tokens": 10
+                }).encode("utf-8")
+                g_req = urllib.request.Request(
+                    g_url,
+                    data=g_payload,
+                    headers={
+                        "Content-Type": "application/json",
+                        "Authorization": f"Bearer {GROQ_API_KEY.strip()}",
+                        "User-Agent": "ZenFlow-ITSM/1.0"
+                    }
+                )
+                with urllib.request.urlopen(g_req, timeout=10) as r:
+                    data = json.loads(r.read().decode("utf-8"))
+                    diag["groq"]["live_test"] = {
+                        "status": "connected_200",
+                        "model": g_model,
+                        "reply": data["choices"][0]["message"]["content"].strip()
+                    }
+                    diag["active_provider"] = f"Groq ({g_model})"
+                    break
+            except urllib.error.HTTPError as he:
+                err_text = he.read().decode("utf-8", errors="ignore")
                 diag["groq"]["live_test"] = {
-                    "status": "connected_200",
-                    "reply": data["choices"][0]["message"]["content"].strip()
+                    "http_status": he.code,
+                    "attempted_model": g_model,
+                    "error": err_text
                 }
-        except urllib.error.HTTPError as he:
-            diag["groq"]["live_test"] = {
-                "http_status": he.code,
-                "error": he.read().decode("utf-8", errors="ignore")
-            }
-        except Exception as e:
-            diag["groq"]["live_test"] = {"error": str(e)}
+                if "model_not_found" in err_text or "does not exist" in err_text:
+                    continue
+            except Exception as e:
+                diag["groq"]["live_test"] = {"error": str(e)}
 
     return diag
 

@@ -42,43 +42,47 @@ def stem_word(w: str) -> str:
 def generate_response(question: str, context: str, chat_history: str = "") -> str:
     import os
 
-    # 1. Attempt Groq API (Ultra-fast enterprise Llama 3.3 70B generative completion)
+    # 1. Attempt Groq API (Ultra-fast enterprise Llama generative completion)
     groq_key = os.getenv("GROQ_API_KEY", "").strip()
     if groq_key and not groq_key.startswith("mock_") and len(groq_key) >= 20:
-        try:
-            import urllib.request
-            import urllib.error
-            import json
-            g_url = "https://api.groq.com/openai/v1/chat/completions"
-            prompt_full = f"{SYSTEM_PROMPT}\n\nConversation History:\n{chat_history}\n\nCompany Documentation Context:\n{context}\n\nUser Question:\n{question}"
-            g_payload = json.dumps({
-                "model": "llama-3.3-70b-versatile",
-                "messages": [
-                    {"role": "user", "content": prompt_full}
-                ],
-                "temperature": 0.2,
-                "max_tokens": 800
-            }).encode("utf-8")
-            g_req = urllib.request.Request(
-                g_url,
-                data=g_payload,
-                headers={
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {groq_key}",
-                    "User-Agent": "ZenFlow-ITSM/1.0"
-                }
-            )
-            with urllib.request.urlopen(g_req, timeout=12) as g_resp:
-                g_data = json.loads(g_resp.read().decode("utf-8"))
-                g_txt = g_data["choices"][0]["message"]["content"].strip()
-                if g_txt:
-                    print("[GROQ] Successfully generated response with llama-3.3-70b-versatile")
-                    return g_txt
-        except urllib.error.HTTPError as ghe:
-            err_b = ghe.read().decode("utf-8", errors="ignore")
-            print(f"[GROQ HTTP ERROR] Code {ghe.code}: {err_b}")
-        except Exception as ge:
-            print(f"[GROQ NOTICE] {ge}")
+        groq_models = ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "llama3-8b-8192"]
+        prompt_full = f"{SYSTEM_PROMPT}\n\nConversation History:\n{chat_history}\n\nCompany Documentation Context:\n{context}\n\nUser Question:\n{question}"
+        for g_model in groq_models:
+            try:
+                import urllib.request
+                import urllib.error
+                import json
+                g_url = "https://api.groq.com/openai/v1/chat/completions"
+                g_payload = json.dumps({
+                    "model": g_model,
+                    "messages": [
+                        {"role": "user", "content": prompt_full}
+                    ],
+                    "temperature": 0.2,
+                    "max_tokens": 800
+                }).encode("utf-8")
+                g_req = urllib.request.Request(
+                    g_url,
+                    data=g_payload,
+                    headers={
+                        "Content-Type": "application/json",
+                        "Authorization": f"Bearer {groq_key}",
+                        "User-Agent": "ZenFlow-ITSM/1.0"
+                    }
+                )
+                with urllib.request.urlopen(g_req, timeout=12) as g_resp:
+                    g_data = json.loads(g_resp.read().decode("utf-8"))
+                    g_txt = g_data["choices"][0]["message"]["content"].strip()
+                    if g_txt:
+                        print(f"[GROQ] Successfully generated response with {g_model}")
+                        return g_txt
+            except urllib.error.HTTPError as ghe:
+                err_b = ghe.read().decode("utf-8", errors="ignore")
+                print(f"[GROQ HTTP ERROR] Model {g_model} Code {ghe.code}: {err_b}")
+                if "model_not_found" in err_b or "does not exist" in err_b:
+                    continue
+            except Exception as ge:
+                print(f"[GROQ NOTICE] {ge}")
 
     # 2. Attempt Google Gemini API (Direct REST + LangChain)
     if is_gemini_active():
