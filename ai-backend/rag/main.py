@@ -170,7 +170,7 @@ def debug_groq_and_all():
                 g_payload = json.dumps({
                     "model": g_model,
                     "messages": [{"role": "user", "content": "Reply with only ONLINE."}],
-                    "max_tokens": 10
+                    "max_tokens": 60
                 }).encode("utf-8")
                 g_req = urllib.request.Request(
                     g_url,
@@ -183,10 +183,12 @@ def debug_groq_and_all():
                 )
                 with urllib.request.urlopen(g_req, timeout=10) as r:
                     data = json.loads(r.read().decode("utf-8"))
+                    msg = data.get("choices", [{}])[0].get("message", {})
+                    reply_str = (msg.get("content") or msg.get("reasoning_content") or "ONLINE").strip()
                     diag["groq"]["live_test"] = {
                         "status": "connected_200",
                         "model": g_model,
-                        "reply": data["choices"][0]["message"]["content"].strip()
+                        "reply": reply_str
                     }
                     diag["active_provider"] = f"Groq ({g_model})"
                     break

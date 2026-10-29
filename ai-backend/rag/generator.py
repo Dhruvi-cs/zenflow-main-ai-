@@ -93,7 +93,7 @@ def generate_response(question: str, context: str, chat_history: str = "") -> st
                         {"role": "user", "content": prompt_full}
                     ],
                     "temperature": 0.2,
-                    "max_tokens": 800
+                    "max_tokens": 1500
                 }).encode("utf-8")
                 g_req = urllib.request.Request(
                     g_url,
@@ -104,9 +104,13 @@ def generate_response(question: str, context: str, chat_history: str = "") -> st
                         "User-Agent": "ZenFlow-ITSM/1.0"
                     }
                 )
-                with urllib.request.urlopen(g_req, timeout=12) as g_resp:
+                with urllib.request.urlopen(g_req, timeout=14) as g_resp:
                     g_data = json.loads(g_resp.read().decode("utf-8"))
-                    g_txt = g_data["choices"][0]["message"]["content"].strip()
+                    msg = g_data.get("choices", [{}])[0].get("message", {})
+                    g_txt = (msg.get("content") or msg.get("reasoning_content") or "").strip()
+                    if "<think>" in g_txt and "</think>" in g_txt:
+                        import re
+                        g_txt = re.sub(r'<think>.*?</think>', '', g_txt, flags=re.DOTALL).strip()
                     if g_txt:
                         print(f"[GROQ] Successfully generated response with {g_model}")
                         return g_txt
