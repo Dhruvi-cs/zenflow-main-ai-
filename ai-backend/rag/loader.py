@@ -27,6 +27,7 @@ def load_documents() -> List[Document]:
                         "title": title,
                         "category": category,
                         "question": question,
+                        "answer": answer,
                         "source": "FAQ_JSON"
                     }
                 )

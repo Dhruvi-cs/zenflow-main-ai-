@@ -75,6 +75,57 @@ def health_check():
         "vectordb": vectordb_status
     }
 
+@app.get("/api/v1/debug-gemini")
+def debug_gemini():
+    from rag.config import GOOGLE_API_KEY, LLM_MODEL, is_gemini_active
+    import urllib.request
+    import urllib.error
+    import json
+
+    key_masked = ""
+    if GOOGLE_API_KEY:
+        k = GOOGLE_API_KEY.strip()
+        key_masked = f"{k[:7]}...{k[-4:]} (length: {len(k)})"
+
+    diagnostics = {
+        "is_gemini_active": is_gemini_active(),
+        "key_masked": key_masked,
+        "model": LLM_MODEL,
+        "tests": {}
+    }
+
+    if not GOOGLE_API_KEY:
+        diagnostics["error"] = "GOOGLE_API_KEY is empty in environment"
+        return diagnostics
+
+    # Test 1: Direct urllib REST call with x-goog-api-key
+    clean_key = GOOGLE_API_KEY.strip()
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{LLM_MODEL}:generateContent?key={clean_key}"
+    payload = json.dumps({"contents": [{"parts": [{"text": "Hello, reply with only the word ONLINE."}]}]}).encode("utf-8")
+    req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json", "x-goog-api-key": clean_key})
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            diagnostics["tests"]["urllib_rest"] = {"status": resp.status, "data": data}
+    except urllib.error.HTTPError as he:
+        diagnostics["tests"]["urllib_rest"] = {"status": he.code, "error": he.read().decode("utf-8", errors="ignore")}
+    except Exception as e:
+        diagnostics["tests"]["urllib_rest"] = {"error": str(e)}
+
+    # Test 2: LangChain ChatGoogleGenerativeAI
+    try:
+        import os
+        os.environ["GEMINI_API_KEY"] = clean_key
+        os.environ["GOOGLE_API_KEY"] = clean_key
+        from langchain_google_genai import ChatGoogleGenerativeAI
+        llm = ChatGoogleGenerativeAI(model=LLM_MODEL, google_api_key=clean_key, temperature=0.1)
+        res = llm.invoke("Hello, reply with ONLINE.")
+        diagnostics["tests"]["langchain"] = {"status": "success", "content": str(res.content)}
+    except Exception as le:
+        diagnostics["tests"]["langchain"] = {"error": str(le)}
+
+    return diagnostics
+
 @app.post("/api/v1/rag/query", response_model=QueryResponse)
 @app.post("/api/v1/rag/chat", response_model=QueryResponse)
 async def query_rag(payload: QueryRequest):

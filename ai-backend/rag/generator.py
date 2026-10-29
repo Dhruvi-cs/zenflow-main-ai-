@@ -105,6 +105,40 @@ def generate_response(question: str, context: str, chat_history: str = "") -> st
         except Exception as e:
             print(f"[GEMINI LANGCHAIN NOTICE] {e}")
 
+    # Optional Attempt 3: Groq Generative API (Ultra-fast free cloud LLM fallback)
+    import os
+    groq_key = os.getenv("GROQ_API_KEY", "").strip()
+    if groq_key and not groq_key.startswith("mock_") and len(groq_key) > 15:
+        try:
+            import urllib.request
+            import json
+            g_url = "https://api.groq.com/openai/v1/chat/completions"
+            prompt_full = f"{SYSTEM_PROMPT}\n\nConversation History:\n{chat_history}\n\nCompany Documentation Context:\n{context}\n\nUser Question:\n{question}"
+            g_payload = json.dumps({
+                "model": "llama-3.3-70b-versatile",
+                "messages": [
+                    {"role": "user", "content": prompt_full}
+                ],
+                "temperature": 0.2,
+                "max_tokens": 800
+            }).encode("utf-8")
+            g_req = urllib.request.Request(
+                g_url,
+                data=g_payload,
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {groq_key}"
+                }
+            )
+            with urllib.request.urlopen(g_req, timeout=10) as g_resp:
+                g_data = json.loads(g_resp.read().decode("utf-8"))
+                g_txt = g_data["choices"][0]["message"]["content"].strip()
+                if g_txt:
+                    print("[GROQ] Successfully generated response with llama-3.3-70b-versatile")
+                    return g_txt
+        except Exception as ge:
+            print(f"[GROQ NOTICE] {ge}")
+
     # 2. Resilient Context-Grounded Synthesizer (Offline & Fallback mode)
     if not context or not context.strip():
         return "CANNOT_ANSWER_ESCALATE_TO_HUMAN"
@@ -155,10 +189,10 @@ def generate_response(question: str, context: str, chat_history: str = "") -> st
 
     # If we have any matched chunk, extract its clean Answer
     if best_score > 0:
-        ans_match = re.search(r"Answer:\s*(.+?)(?=\nTitle:|\nCategory:|\Z)", best_chunk, re.DOTALL | re.IGNORECASE)
-        if ans_match:
-            return ans_match.group(1).strip()
-        # Clean up chunk lines
+        for _, ch in scored_chunks:
+            ans_match = re.search(r"Answer:\s*(.+?)(?=\nTitle:|\nCategory:|\Z)", ch, re.DOTALL | re.IGNORECASE)
+            if ans_match:
+                return ans_match.group(1).strip()
         clean_lines = [l for l in best_chunk.splitlines() if not l.startswith("Source:") and not l.startswith("Category:")]
         return "\n".join(clean_lines).strip()
 

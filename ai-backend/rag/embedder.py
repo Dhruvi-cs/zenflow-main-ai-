@@ -61,8 +61,8 @@ def get_embeddings():
 def create_chunks():
     documents = load_documents()
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=50
+        chunk_size=2000,
+        chunk_overlap=150
     )
     chunks = splitter.split_documents(documents)
     print(f"Created {len(chunks)} text chunks from knowledge documents.")
