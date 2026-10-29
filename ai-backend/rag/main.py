@@ -160,9 +160,10 @@ def debug_groq_and_all():
         }
     }
 
-    # Live test Groq across free-tier models
+    # Live test Groq with dynamic active model discovery
     if GROQ_API_KEY:
-        groq_models = ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "llama3-8b-8192"]
+        from rag.generator import discover_groq_model
+        groq_models = discover_groq_model(GROQ_API_KEY.strip())
         for g_model in groq_models:
             try:
                 g_url = "https://api.groq.com/openai/v1/chat/completions"
@@ -196,7 +197,7 @@ def debug_groq_and_all():
                     "attempted_model": g_model,
                     "error": err_text
                 }
-                if "model_not_found" in err_text or "does not exist" in err_text:
+                if "model_not_found" in err_text or "decommissioned" in err_text or "does not exist" in err_text:
                     continue
             except Exception as e:
                 diag["groq"]["live_test"] = {"error": str(e)}

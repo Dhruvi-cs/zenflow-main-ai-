@@ -39,13 +39,47 @@ def stem_word(w: str) -> str:
     if w.endswith('s') and not w.endswith('ss') and len(w) > 3: return w[:-1]
     return w
 
+_cached_groq_model = None
+
+def discover_groq_model(groq_key: str) -> list:
+    global _cached_groq_model
+    if _cached_groq_model:
+        return [_cached_groq_model, "openai/gpt-oss-20b", "llama-3.3-70b-versatile"]
+    try:
+        import urllib.request
+        import json
+        req = urllib.request.Request(
+            "https://api.groq.com/openai/v1/models",
+            headers={
+                "Authorization": f"Bearer {groq_key}",
+                "User-Agent": "ZenFlow-ITSM/1.0"
+            }
+        )
+        with urllib.request.urlopen(req, timeout=6) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            available = [m["id"] for m in data.get("data", [])]
+            # Prioritize chat models
+            chat_candidates = []
+            for pref in ["openai/gpt-oss-20b", "openai/gpt-oss-120b", "llama-3.3-70b-versatile", "qwen/qwen3.8-27b"]:
+                if pref in available:
+                    chat_candidates.append(pref)
+            for m in available:
+                if m not in chat_candidates and "whisper" not in m and "orpheus" not in m and "safeguard" not in m:
+                    chat_candidates.append(m)
+            if chat_candidates:
+                _cached_groq_model = chat_candidates[0]
+                return chat_candidates
+    except Exception as me:
+        print(f"[GROQ MODEL DISCOVERY NOTICE] {me}")
+    return ["openai/gpt-oss-20b", "llama-3.3-70b-versatile", "llama-3.1-8b-instant"]
+
 def generate_response(question: str, context: str, chat_history: str = "") -> str:
     import os
 
-    # 1. Attempt Groq API (Ultra-fast enterprise Llama generative completion)
+    # 1. Attempt Groq API (Ultra-fast enterprise generative completion with auto-model discovery)
     groq_key = os.getenv("GROQ_API_KEY", "").strip()
     if groq_key and not groq_key.startswith("mock_") and len(groq_key) >= 20:
-        groq_models = ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "llama3-8b-8192"]
+        groq_models = discover_groq_model(groq_key)
         prompt_full = f"{SYSTEM_PROMPT}\n\nConversation History:\n{chat_history}\n\nCompany Documentation Context:\n{context}\n\nUser Question:\n{question}"
         for g_model in groq_models:
             try:
@@ -79,7 +113,7 @@ def generate_response(question: str, context: str, chat_history: str = "") -> st
             except urllib.error.HTTPError as ghe:
                 err_b = ghe.read().decode("utf-8", errors="ignore")
                 print(f"[GROQ HTTP ERROR] Model {g_model} Code {ghe.code}: {err_b}")
-                if "model_not_found" in err_b or "does not exist" in err_b:
+                if "model_not_found" in err_b or "decommissioned" in err_b or "does not exist" in err_b:
                     continue
             except Exception as ge:
                 print(f"[GROQ NOTICE] {ge}")
