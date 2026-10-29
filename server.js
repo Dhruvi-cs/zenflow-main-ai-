@@ -64,13 +64,24 @@ app.get('/api', (req, res) => {
 
 app.get('/api/health', async (req, res) => {
   let aiHealth = 'unreachable';
-  try {
-    const rawAiUrl = process.env.AI_SERVICE_URL || 'http://127.0.0.1:8000';
-    const aiBase = rawAiUrl.replace(/\/api\/v1\/rag\/query\/?$/, '').replace(/\/+$/, '');
-    const aiRes = await axios.get(aiBase + '/', { timeout: 3000 });
-    if (aiRes.status === 200) aiHealth = 'online';
-  } catch {
-    aiHealth = 'offline';
+  const urlsToCheck = [];
+  if (process.env.AI_SERVICE_URL && !process.env.AI_SERVICE_URL.includes('127.0.0.1')) {
+    urlsToCheck.push(process.env.AI_SERVICE_URL);
+  }
+  urlsToCheck.push('https://zenflow-service.onrender.com');
+  urlsToCheck.push('http://127.0.0.1:8000');
+
+  for (const rawUrl of urlsToCheck) {
+    try {
+      const aiBase = rawUrl.replace(/\/api\/v1\/rag\/query\/?$/, '').replace(/\/+$/, '');
+      const aiRes = await axios.get(aiBase + '/', { timeout: 4000 });
+      if (aiRes.status === 200) {
+        aiHealth = 'online';
+        break;
+      }
+    } catch {
+      // try next
+    }
   }
 
   res.json({

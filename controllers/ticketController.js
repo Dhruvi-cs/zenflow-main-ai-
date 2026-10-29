@@ -41,38 +41,51 @@ exports.createTicket = async (req, res) => {
       error: null
     };
 
-    // Forward to FastAPI RAG microservice
-    try {
-      const aiEndpoint = process.env.AI_SERVICE_URL || 'http://127.0.0.1:8000/api/v1/rag/query';
-      const aiResponse = await axios.post(
-        aiEndpoint,
-        {
-          query: fullQuery,
-          category: selectedCategory
-        },
-        { timeout: 12000 }
-      );
+    // Forward to FastAPI RAG microservice with automatic Cloud Fallback
+    const endpointsToTry = [];
+    if (process.env.AI_SERVICE_URL && !process.env.AI_SERVICE_URL.includes('127.0.0.1')) {
+      endpointsToTry.push(process.env.AI_SERVICE_URL);
+    }
+    endpointsToTry.push('https://zenflow-service.onrender.com/api/v1/rag/query');
+    if (process.env.AI_SERVICE_URL && process.env.AI_SERVICE_URL.includes('127.0.0.1')) {
+      endpointsToTry.push(process.env.AI_SERVICE_URL);
+    } else {
+      endpointsToTry.push('http://127.0.0.1:8000/api/v1/rag/query');
+    }
 
-      if (aiResponse.data) {
-        const raw = aiResponse.data;
-        const answerText = raw.answer || raw.ai_response || raw.reply || raw.response || '';
-        const isDeflected = Boolean(raw.deflected || raw.can_deflect || (!raw.requires_human_agent && raw.confidence_score >= 0.60));
-        const confidence = typeof raw.confidence_score === 'number' ? raw.confidence_score : 0.85;
-        const sources = Array.isArray(raw.retrieved_sources) ? raw.retrieved_sources : (Array.isArray(raw.sources) ? raw.sources : []);
+    for (const aiEndpoint of endpointsToTry) {
+      try {
+        const aiResponse = await axios.post(
+          aiEndpoint,
+          {
+            query: fullQuery,
+            category: selectedCategory
+          },
+          { timeout: 15000 }
+        );
 
-        aiData = {
-          ticket_id: null,
-          deflected: isDeflected,
-          can_deflect: isDeflected,
-          ai_response: answerText || aiData.ai_response,
-          confidence_score: confidence,
-          retrieved_sources: sources,
-          error: null
-        };
+        if (aiResponse.data) {
+          const raw = aiResponse.data;
+          const answerText = raw.answer || raw.ai_response || raw.reply || raw.response || '';
+          const isDeflected = Boolean(raw.deflected || raw.can_deflect || (!raw.requires_human_agent && raw.confidence_score >= 0.60));
+          const confidence = typeof raw.confidence_score === 'number' ? raw.confidence_score : 0.85;
+          const sources = Array.isArray(raw.retrieved_sources) ? raw.retrieved_sources : (Array.isArray(raw.sources) ? raw.sources : []);
+
+          aiData = {
+            ticket_id: null,
+            deflected: isDeflected,
+            can_deflect: isDeflected,
+            ai_response: answerText || aiData.ai_response,
+            confidence_score: confidence,
+            retrieved_sources: sources,
+            error: null
+          };
+          break; // successfully received response
+        }
+      } catch (aiErr) {
+        console.warn(`[Ticket AI Notice] Microservice endpoint ${aiEndpoint} unreachable:`, aiErr.message);
+        aiData.error = aiErr.message;
       }
-    } catch (aiErr) {
-      console.warn('AI microservice notice (falling back gracefully):', aiErr.message);
-      aiData.error = aiErr.message;
     }
 
     const isDeflected = Boolean(aiData.deflected);
